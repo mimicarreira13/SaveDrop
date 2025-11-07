@@ -3,6 +3,9 @@
 @tailwind utilities;
 @custom-variant dark (&:is(.dark *));
 
+/* podes adicionar aqui o teu CSS custom */
+
+
 :root {
   --font-size: 16px;
   --background: #ffffff;
