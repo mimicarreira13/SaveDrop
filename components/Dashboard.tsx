@@ -1,3 +1,5 @@
+'use client';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Droplet, TrendingDown, Calendar } from 'lucide-react';
 import { Progress } from './ui/progress';
@@ -17,7 +19,12 @@ export function Dashboard() {
     "Parabéns pela economia! 🎉"
   ];
 
-  const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+  const [randomMessage, setRandomMessage] = useState('');
+
+  useEffect(() => {
+    const msg = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+    setRandomMessage(msg);
+  }, []);
 
   return (
     <div className="p-6 space-y-6">
