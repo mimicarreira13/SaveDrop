@@ -1,0 +1,77 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next.js build / export
+.next/
+out/
+dist/
+build/
+
+# Vercel / Now
+.vercel/
+.now/
+
+# Environment files (keep secrets out of git)
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs & reports
+logs/
+*.log
+report.*
+coverage/
+.nyc_output/
+
+# Cache / tooling
+.cache/
+.cache-loader/
+.parcel-cache/
+.pnp.*
+.pnp.js
+.eslintcache
+
+# Editor / OS files
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
+*.sublime-workspace
+*.sw?
+
+# Yarn (Berry) / pnpm
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/patches
+.yarn-integrity
+.yarn-state.yml
+.yarnrc.yml
+.pnpm-store/
+
+# Storybook / static preview
+storybook-static/
+.storybook-static/
+
+# Build artifacts from other tools
+dist-ssr/
+.astro/
+out-tsc/
+
+# Misc
+coverage/
+tmp/
+temp/
+*.localhistory
