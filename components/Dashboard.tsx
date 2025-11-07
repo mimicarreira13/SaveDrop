@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Droplet, TrendingDown, Calendar } from 'lucide-react';
 import { Progress } from './ui/progress';
 import { Card } from './ui/card';

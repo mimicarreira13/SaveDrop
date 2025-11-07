@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @custom-variant dark (&:is(.dark *));
 
 /* podes adicionar aqui o teu CSS custom */
