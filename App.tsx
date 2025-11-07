@@ -12,9 +12,10 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50">
       {/* Mobile Container */}
-      <div className="max-w-md mx-auto min-h-screen bg-white shadow-xl">
+      <div className="max-w-md mx-auto min-h-screen bg-white shadow-xl flex flex-col">
         {/* Content Area */}
-        <div className="pb-20">
+        <div className="flex-1 overflow-auto" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))' }}
+        >
           {activeTab === 'dashboard' && <Dashboard />}
           {activeTab === 'metas' && <Metas />}
           {activeTab === 'recompensas' && <Recompensas />}
