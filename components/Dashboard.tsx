@@ -34,7 +34,7 @@ export function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-blue-600 mb-2">AquaSave</h1>
+        <h1 className="text-blue-600 mb-2">SaveDrop</h1>
         <p className="text-gray-600">Seu consumo de água</p>
       </motion.div>
 

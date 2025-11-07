@@ -1,58 +1,79 @@
+'use client';
 import { motion } from 'motion/react';
+import { useMemo } from "react";
+import { generateRandomName } from "../utils/generateRandomName";
 import { Trophy, Medal, Award, TrendingUp } from 'lucide-react';
 import { Card } from './ui/card';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Badge } from './ui/badge';
 
 export function Ranking() {
-  const topUsers = [
-    {
-      id: 1,
-      name: "Maria Silva",
-      avatar: "MS",
-      saved: 3450,
-      rank: 1,
-      change: "up",
-      color: "bg-yellow-500"
-    },
-    {
-      id: 2,
-      name: "João Santos",
-      avatar: "JS",
-      saved: 2890,
-      rank: 2,
-      change: "same",
-      color: "bg-gray-400"
-    },
-    {
-      id: 3,
-      name: "Ana Costa",
-      avatar: "AC",
-      saved: 2340,
-      rank: 3,
-      change: "up",
-      color: "bg-orange-600"
-    },
-    {
-      id: 4,
-      name: "Você",
-      avatar: "💧",
-      saved: 1250,
-      rank: 4,
-      change: "down",
-      color: "bg-blue-500",
-      isUser: true
-    },
-    {
-      id: 5,
-      name: "Pedro Lima",
-      avatar: "PL",
-      saved: 980,
-      rank: 5,
-      change: "up",
-      color: "bg-green-500"
+
+    const faceEmojis = ["😀", "😇", "😎", "😊", "🥰", "🤓", "🤠", "😋", "🤗", "🙃"];
+
+    function getRandomEmojis(arr: string[], n: number): string[] {
+        const copy = [...arr];
+        const result: string[] = [];
+        for (let i = 0; i < n; i++) {
+            const index = Math.floor(Math.random() * copy.length);
+            result.push(copy.splice(index, 1)[0]);
+        }
+        return result;
     }
-  ];
+
+    const randomEmojis = getRandomEmojis(faceEmojis, 4);
+
+  const topUsers = useMemo(
+      () => [
+        {
+          id: 1,
+          name: generateRandomName(),
+          avatar: randomEmojis[0],
+          saved: 3450,
+          rank: 1,
+          change: "up",
+          color: "bg-yellow-500",
+        },
+        {
+          id: 2,
+          name: generateRandomName(),
+          avatar: randomEmojis[1],
+          saved: 2890,
+          rank: 2,
+          change: "same",
+          color: "bg-gray-400",
+        },
+        {
+          id: 3,
+          name: generateRandomName(),
+          avatar: randomEmojis[2],
+          saved: 2340,
+          rank: 3,
+          change: "up",
+          color: "bg-orange-600",
+        },
+        {
+          id: 4,
+          name: "Você",
+          avatar: "💧",
+          saved: 1250,
+          rank: 4,
+          change: "down",
+          color: "bg-blue-500",
+          isUser: true,
+        },
+        {
+          id: 5,
+          name: generateRandomName(),
+          avatar: randomEmojis[3],
+          saved: 980,
+          rank: 5,
+          change: "up",
+          color: "bg-green-500",
+        },
+      ],
+      []
+  );
 
   const stats = [
     { label: "Sua Posição", value: "4º", icon: Trophy, color: "text-blue-600" },
