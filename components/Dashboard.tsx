@@ -13,11 +13,12 @@ export function Dashboard() {
   const daysStreak = 12;
 
   const motivationalMessages = [
-    "Excelente trabalho! Continue assim! 💧",
-    "Você está fazendo a diferença! 🌍",
+    "Excelente trabalho! Continua assim! 💧",
+    "Estás a fazer a diferença! 🌍",
     "Cada gota conta para o planeta! 🌱",
-    "Parabéns pela economia! 🎉"
+    "Parabéns pela poupança! 🎉"
   ];
+
 
   const [randomMessage, setRandomMessage] = useState('');
 
@@ -35,7 +36,7 @@ export function Dashboard() {
         transition={{ duration: 0.5 }}
       >
         <h1 className="text-blue-600 mb-2">SaveDrop</h1>
-        <p className="text-gray-600">Seu consumo de água</p>
+        <p className="text-gray-600">O seu consumo de água</p>
       </motion.div>
 
       {/* Water Drop Animation */}
@@ -50,7 +51,7 @@ export function Dashboard() {
         <Card className="p-6 bg-gradient-to-br from-blue-500 to-green-500 text-white border-0 shadow-lg">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="opacity-90 mb-1">Água Economizada</p>
+              <p className="opacity-90 mb-1">Água Poupada</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl">{waterSaved}</span>
                 <span className="opacity-90">/ {goalWater}L</span>

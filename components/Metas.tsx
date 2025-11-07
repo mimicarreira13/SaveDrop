@@ -8,7 +8,7 @@ export function Metas() {
   const goals = [
     {
       id: 1,
-      title: "Economizar 2000L este mês",
+      title: "Poupar 2000L este mês",
       current: 1250,
       target: 2000,
       status: "active",
@@ -16,8 +16,8 @@ export function Metas() {
     },
     {
       id: 2,
-      title: "10 dias de sequência",
-      current: 12,
+      title: "10 dias seguidos",
+      current: 10,
       target: 10,
       status: "completed",
       icon: CheckCircle2
@@ -47,8 +47,8 @@ export function Metas() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-blue-600 mb-2">Suas Metas</h1>
-        <p className="text-gray-600">Acompanhe seu progresso</p>
+        <h1 className="text-blue-600 mb-2">As Suas Metas</h1>
+        <p className="text-gray-600">Acompanhe o seu progresso</p>
       </motion.div>
 
       {/* Active Goals */}
@@ -116,7 +116,7 @@ export function Metas() {
                     )}
                     <div>
                       <p className="text-gray-800">{item.month}</p>
-                      <p className="text-sm text-gray-600">{item.saved}L economizados</p>
+                      <p className="text-sm text-gray-600">{item.saved}L poupados</p>
                     </div>
                   </div>
                   {item.status === 'current' && (

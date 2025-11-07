@@ -76,7 +76,7 @@ export function Ranking() {
   );
 
   const stats = [
-    { label: "Sua Posição", value: "4º", icon: Trophy, color: "text-blue-600" },
+    { label: "A Sua Posição", value: "4º", icon: Trophy, color: "text-blue-600" },
     { label: "Pontos", value: "1250", icon: Award, color: "text-green-600" },
     { label: "Variação", value: "-1", icon: TrendingUp, color: "text-orange-600" }
   ];
@@ -90,7 +90,7 @@ export function Ranking() {
         transition={{ duration: 0.5 }}
       >
         <h1 className="text-blue-600 mb-2">Ranking Social</h1>
-        <p className="text-gray-600">Compare seu progresso</p>
+        <p className="text-gray-600">Compare o seu progresso</p>
       </motion.div>
 
       {/* Stats Cards */}
@@ -203,7 +203,7 @@ export function Ranking() {
                     <p className={`${user.isUser ? 'text-blue-800' : 'text-gray-800'}`}>
                       {user.name}
                     </p>
-                    <p className="text-sm text-gray-600">{user.saved}L economizados</p>
+                    <p className="text-sm text-gray-600">{user.saved}L poupados</p>
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-1">

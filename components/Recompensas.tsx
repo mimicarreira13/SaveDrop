@@ -12,7 +12,7 @@ export function Recompensas() {
       description: "Complete seu primeiro dia",
       icon: "💧",
       unlocked: true,
-      date: "01/11/2024"
+      date: "01/10/2025"
     },
     {
       id: 2,
@@ -20,7 +20,7 @@ export function Recompensas() {
       description: "7 dias de sequência",
       icon: "🌊",
       unlocked: true,
-      date: "07/11/2024"
+      date: "07/10/2025"
     },
     {
       id: 3,
@@ -28,7 +28,7 @@ export function Recompensas() {
       description: "Economize 1000L",
       icon: "⭐",
       unlocked: true,
-      date: "15/10/2024"
+      date: "20/10/2025"
     },
     {
       id: 4,
@@ -36,7 +36,7 @@ export function Recompensas() {
       description: "30 dias de sequência",
       icon: "🏆",
       unlocked: false,
-      progress: "12/30 dias"
+      progress: "15/30 dias"
     },
     {
       id: 5,
@@ -107,7 +107,7 @@ export function Recompensas() {
           </div>
           <div className="flex gap-4 text-center">
             <div className="flex-1">
-              <p className="text-2xl">12</p>
+              <p className="text-2xl">3</p>
               <p className="text-xs opacity-90">Badges</p>
             </div>
             <div className="flex-1">
@@ -115,7 +115,7 @@ export function Recompensas() {
               <p className="text-xs opacity-90">Pontos</p>
             </div>
             <div className="flex-1">
-              <p className="text-2xl">3º</p>
+              <p className="text-2xl">4º</p>
               <p className="text-xs opacity-90">Ranking</p>
             </div>
           </div>
@@ -195,7 +195,7 @@ export function Recompensas() {
               className="px-4 py-2 bg-purple-500 text-white rounded-lg"
               whileTap={{ scale: 0.9 }}
             >
-              Coletar
+              Resgatar
             </motion.button>
           </div>
         </Card>
