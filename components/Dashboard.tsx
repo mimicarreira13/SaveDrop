@@ -61,7 +61,7 @@ export function Dashboard() {
           </div>
 
           <div className="space-y-2">
-            <Progress value={progressPercentage}  className="h-3 bg-white/30" />
+            <Progress value={progressPercentage} color="white" className="h-3 bg-white/30" />
             <p className="text-sm opacity-90">{progressPercentage.toFixed(0)}% da meta mensal</p>
           </div>
         </Card>

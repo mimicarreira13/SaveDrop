@@ -88,7 +88,12 @@ export function Metas() {
                     <Badge variant="outline" className="border-blue-500 text-blue-600">Ativa</Badge>
                   )}
                 </div>
-                <Progress value={progress} className={`h-2 ${isCompleted ? 'bg-green-200' : ''}`} />
+                <Progress
+                    value={isCompleted ? 100 : progress}
+                    color={isCompleted ? "green" : "blue"}
+                    animate={!isCompleted}
+                    className={`h-2 ${isCompleted ? "bg-green-200 opacity-40" : ""}`}
+                />
               </Card>
             </motion.div>
           );

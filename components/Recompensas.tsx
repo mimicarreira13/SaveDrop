@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { Trophy, Award, Star, Lock } from 'lucide-react';
 import { Card } from './ui/card';
 import { Avatar, AvatarFallback } from './ui/avatar';
+import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
 
 export function Recompensas() {
@@ -94,14 +95,11 @@ export function Recompensas() {
             <div className="flex-1">
               <h2 className="mb-1">Nível {userLevel}</h2>
               <p className="text-sm opacity-90 mb-2">Eco Guerreiro</p>
-              <div className="bg-white/30 rounded-full h-2 mb-1">
-                <motion.div
-                  className="bg-white h-full rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${levelProgress}%` }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                />
-              </div>
+              <Progress
+                  value={levelProgress}
+                  color="white"
+                  className="bg-white/30 h-2 mb-1"
+              />
               <p className="text-xs opacity-90">{userPoints} / {nextLevelPoints} pontos</p>
             </div>
           </div>
