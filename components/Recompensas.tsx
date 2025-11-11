@@ -164,9 +164,9 @@ export function Recompensas() {
                 </h4>
                 <p className="text-xs text-gray-600 mb-2">{badge.description}</p>
                 {badge.unlocked ? (
-                  <Badge variant="outline" className="border-green-500 text-green-600 text-xs">
-                    {badge.date}
-                  </Badge>
+                    <Badge variant="outline" className="border-green-500 text-green-600 text-xs mx-auto block text-center">
+                      {badge.date}
+                    </Badge>
                 ) : (
                   <p className="text-xs text-gray-500">{badge.progress}</p>
                 )}
