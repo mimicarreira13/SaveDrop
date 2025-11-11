@@ -16,20 +16,20 @@ export function Metas() {
     },
     {
       id: 2,
+      title: "Reduzir 40% do consumo",
+      current: 35,
+      target: 40,
+      status: "active",
+      icon: TrendingUp
+    },
+    {
+      id: 3,
       title: "10 dias seguidos",
       current: 10,
       target: 10,
       status: "completed",
       icon: CheckCircle2
     },
-    {
-      id: 3,
-      title: "Reduzir 40% do consumo",
-      current: 35,
-      target: 40,
-      status: "active",
-      icon: TrendingUp
-    }
   ];
 
   const history = [
@@ -48,7 +48,7 @@ export function Metas() {
         transition={{ duration: 0.5 }}
       >
         <h1 className="text-blue-600 mb-2">As Suas Metas</h1>
-        <p className="text-gray-600">Acompanhe o seu progresso</p>
+        <p className="text-gray-600 font-bold bold">Acompanhe o seu progresso</p>
       </motion.div>
 
       {/* Active Goals */}
