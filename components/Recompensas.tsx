@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { Trophy, Award, Star, Lock } from 'lucide-react';
 import { Card } from './ui/card';
+import {cn} from './ui/utils';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
@@ -132,11 +133,14 @@ export function Recompensas() {
               transition={{ duration: 0.3, delay: index * 0.1 }}
               whileHover={{ scale: badge.unlocked ? 1.05 : 1 }}
             >
-              <Card className={`p-4 text-center ${
-                badge.unlocked 
-                  ? 'bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-300' 
-                  : 'bg-gray-50 border-gray-300'
-              }`}>
+              <Card
+                  className={cn(
+                      "flex flex-col justify-between items-center text-center p-4 h-60",
+                      badge.unlocked
+                          ? "bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-300"
+                          : "bg-gray-50 border-gray-300"
+                  )}
+              >
                 <div className="relative mb-2">
                   <motion.div
                     className={`text-4xl mb-2 ${!badge.unlocked ? 'opacity-30' : ''}`}
