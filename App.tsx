@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
-import { Dashboard } from './components/Dashboard';
-import { Metas } from './components/Metas';
-import { Recompensas } from './components/Recompensas';
-import { Ranking } from './components/Ranking';
+import { Dashboard } from './components/pages/Dashboard';
+import { Metas } from './components/pages/Metas';
+import { Recompensas } from './components/pages/Recompensas';
+import { Ranking } from './components/pages/Ranking';
 import { Droplet, Target, Trophy, Users } from 'lucide-react';
 
 export default function App() {

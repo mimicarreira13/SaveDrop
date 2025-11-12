@@ -1,10 +1,10 @@
 import { motion } from 'motion/react';
 import { Trophy, Award, Star, Lock } from 'lucide-react';
-import { Card } from './ui/card';
-import {cn} from './ui/utils';
-import { Avatar, AvatarFallback } from './ui/avatar';
-import { Progress } from './ui/progress';
-import { Badge } from './ui/badge';
+import { Card } from '../ui/card';
+import {cn} from '../ui/utils';
+import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Progress } from '../ui/progress';
+import { Badge } from '../ui/badge';
 
 export function Recompensas() {
   const badges = [

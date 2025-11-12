@@ -1,8 +1,8 @@
 import { motion } from 'motion/react';
 import { Target, CheckCircle2, Clock, TrendingUp } from 'lucide-react';
-import { Card } from './ui/card';
-import { Progress } from './ui/progress';
-import { Badge } from './ui/badge';
+import { Card } from '../ui/card';
+import { Progress } from '../ui/progress';
+import { Badge } from '../ui/badge';
 
 export function Metas() {
   const goals = [

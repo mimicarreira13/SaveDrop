@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Droplet, TrendingDown, Calendar } from 'lucide-react';
-import { Progress } from './ui/progress';
-import { Card } from './ui/card';
+import { Progress } from '../ui/progress';
+import { Card } from '../ui/card';
 import { WaterDropAnimation } from './WaterDropAnimation';
 
 export function Dashboard() {

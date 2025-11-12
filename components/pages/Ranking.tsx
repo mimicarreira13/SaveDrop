@@ -1,11 +1,11 @@
 'use client';
 import { motion } from 'motion/react';
 import { useMemo } from "react";
-import { generateRandomName } from "../utils/generateRandomName";
+import { generateRandomName } from "../../utils/generateRandomName";
 import { Trophy, Medal, Award, TrendingUp } from 'lucide-react';
-import { Card } from './ui/card';
-import { Avatar, AvatarFallback } from './ui/avatar';
-import { Badge } from './ui/badge';
+import { Card } from '../ui/card';
+import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Badge } from '../ui/badge';
 
 export function Ranking() {
 
