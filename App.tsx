@@ -4,7 +4,8 @@ import { Dashboard } from './components/pages/Dashboard';
 import { Metas } from './components/pages/Metas';
 import { Recompensas } from './components/pages/Recompensas';
 import { Ranking } from './components/pages/Ranking';
-import { Droplet, Target, Trophy, Users } from 'lucide-react';
+import { Mascote } from './components/pages/Mascote';
+import { Droplet, Target, Trophy, Users, Heart } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -20,6 +21,7 @@ export default function App() {
           {activeTab === 'metas' && <Metas />}
           {activeTab === 'recompensas' && <Recompensas />}
           {activeTab === 'ranking' && <Ranking />}
+          {activeTab === 'mascote' && <Mascote />}
         </div>
 
         {/* Bottom Navigation */}
@@ -43,6 +45,16 @@ export default function App() {
             >
               <Target className="w-6 h-6 mb-1" />
               <span className="text-xs">Metas</span>
+            </button>
+
+            <button
+                onClick={() => setActiveTab('mascote')}
+                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+                    activeTab === 'mascote' ? 'text-blue-600' : 'text-gray-400'
+                }`}
+            >
+              <Heart className="w-6 h-6 mb-1" />
+              <span className="text-xs">Mascote</span>
             </button>
 
             <button
