@@ -3,8 +3,11 @@ import { motion } from 'motion/react';
 import { Droplet, Smile, Meh, Frown } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
+import happyImg from '../../assets/images/Happy.png';
+import worriedImg from '../../assets/images/worried.png';
+import sadImg from '../../assets/images/sad.png';
 
-type MascotMood = 'happy' | 'neutral' | 'sad';
+type MascotMood = 'happy' | 'worried' | 'sad';
 
 interface MascotState {
     mood: MascotMood;
@@ -24,8 +27,8 @@ const mascotStates: Record<MascotMood, MascotState> = {
         bgColor: 'bg-blue-500',
         borderColor: 'border-blue-300'
     },
-    neutral: {
-        mood: 'neutral',
+    worried: {
+        mood: 'worried',
         message: 'Continua atento ao teu consumo.',
         tip: 'Cada pequena ação conta. Vamos juntos poupar mais água! 💧',
         color: 'text-blue-400',
@@ -43,17 +46,39 @@ const mascotStates: Record<MascotMood, MascotState> = {
 };
 
 export function Mascote() {
-    const [currentMood, setCurrentMood] = useState<MascotMood>('neutral');
+    const [currentMood, setCurrentMood] = useState<MascotMood>('worried');
     const mascot = mascotStates[currentMood];
+
+    const happySrc = typeof happyImg === 'string' ? happyImg : (happyImg as { src: string }).src;
+    const worriedSrc = typeof worriedImg === 'string' ? worriedImg : (worriedImg as { src: string }).src;
+    const sadSrc = typeof sadImg === 'string' ? sadImg : (sadImg as { src: string }).src;
 
     const getMascotIcon = () => {
         switch (currentMood) {
             case 'happy':
-                return <Smile className="w-12 h-12 text-white" />;
-            case 'neutral':
-                return <Meh className="w-12 h-12 text-white" />;
+                return (
+                    <img
+                        src={happySrc}
+                        alt="Splashy happy"
+                        className="w-20 h-20 object-contain"
+                    />
+                );
+            case 'worried':
+                return (
+                    <img
+                        src={worriedSrc}
+                        alt="Splashy worriedSrc"
+                        className="w-20 h-20 object-contain"
+                    />
+                );
             case 'sad':
-                return <Frown className="w-12 h-12 text-white" />;
+                return (
+                    <img
+                        src={sadSrc}
+                        alt="Splashy sadSrc"
+                        className="w-20 h-20 object-contain"
+                    />
+                );
         }
     };
 
@@ -76,12 +101,12 @@ export function Mascote() {
                 transition={{ duration: 0.6, delay: 0.2 }}
             >
                 <Card className={`p-8 bg-gradient-to-br from-blue-50 to-green-50 ${mascot.borderColor} border-2 shadow-lg`}>
-                    <div className="flex flex-col items-center space-y-6">
+                    <div className="flex flex-col items-center space-y-6 mt-10">
                         {/* Animated Mascot */}
                         <motion.div
                             animate={{
                                 y: [0, -10, 0],
-                                scale: [1, 1.05, 1]
+                                scale: [2, 2.05, 2]
                             }}
                             transition={{
                                 duration: 2,
@@ -91,32 +116,19 @@ export function Mascote() {
                             className="relative"
                         >
                             {/* Main Drop */}
-                            <div className={`relative w-40 h-40 ${mascot.bgColor} rounded-full rounded-tl-none rotate-45 shadow-2xl flex items-center justify-center`}>
-                                <div className="rotate-[-45deg]">
+                            <div>
+                                <div>
                                     {getMascotIcon()}
                                 </div>
                             </div>
-
-                            {/* Shine Effect */}
-                            <motion.div
-                                className="absolute top-8 left-8 w-8 h-8 bg-white/40 rounded-full"
-                                animate={{
-                                    opacity: [0.4, 0.7, 0.4]
-                                }}
-                                transition={{
-                                    duration: 2,
-                                    repeat: Infinity,
-                                    ease: "easeInOut"
-                                }}
-                            />
                         </motion.div>
 
                         {/* Mascot Name */}
                         <div className="text-center">
-                            <h2 className={mascot.color}>AquaBuddy</h2>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <h2 className={`${mascot.color} mt-10`}>Splashy</h2>
+                            <p className="text-sm text-gray-500">
                                 {currentMood === 'happy' && '😊 Feliz'}
-                                {currentMood === 'neutral' && '😐 Neutro'}
+                                {currentMood === 'worried' && '😐 Preocupado'}
                                 {currentMood === 'sad' && '😢 Triste'}
                             </p>
                         </div>
@@ -174,7 +186,7 @@ export function Mascote() {
             >
                 <Card className="p-6 bg-gradient-to-r from-blue-50 to-green-50 border-gray-200">
                     <p className="text-sm text-gray-700 mb-4 text-center">
-                        Como está o AquaBuddy hoje?
+                        Como está o Splashy hoje?
                     </p>
                     <div className="flex gap-3">
                         <Button
@@ -188,14 +200,14 @@ export function Mascote() {
                             😊 Feliz
                         </Button>
                         <Button
-                            onClick={() => setCurrentMood('neutral')}
+                            onClick={() => setCurrentMood('worried')}
                             className={`flex-1 h-12 ${
-                                currentMood === 'neutral'
+                                currentMood === 'worried'
                                     ? 'bg-blue-400 text-white'
                                     : 'bg-white text-gray-600 border border-gray-300'
                             }`}
                         >
-                            😐 Neutro
+                            😐 Preocupado
                         </Button>
                         <Button
                             onClick={() => setCurrentMood('sad')}
@@ -217,7 +229,7 @@ export function Mascote() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 1 }}
             >
-                <h3 className="mb-3 text-gray-700">Como ajudar o AquaBuddy</h3>
+                <h3 className="mb-3 text-gray-700">Como ajudar o Splashy</h3>
                 <div className="space-y-2">
                     <Card className="p-3 bg-white border-gray-200">
                         <p className="text-sm text-gray-700">💧 Regista o teu consumo diariamente</p>
