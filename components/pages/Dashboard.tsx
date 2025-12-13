@@ -17,6 +17,13 @@ export function Dashboard({ onAdd }: DashboardProps) {
   const progressPercentage = (waterSaved / goalWater) * 100;
   const daysStreak = 12;
 
+  const LITERS_PER_BOTTLE = 1.5;
+  const LITERS_PER_SHORT_SHOWER = 50;
+  const LITERS_PER_HANDWASH = 2;
+  const equivalentBottles = Math.floor(waterSaved / LITERS_PER_BOTTLE);
+  const equivalentShowers = Math.floor(waterSaved / LITERS_PER_SHORT_SHOWER);
+  const equivalentHandwashes = Math.floor(waterSaved / LITERS_PER_HANDWASH);
+
   const motivationalMessages = [
     "Excelente trabalho! Continua assim! 💧",
     "Estás a fazer a diferença! 🌍",
@@ -24,12 +31,23 @@ export function Dashboard({ onAdd }: DashboardProps) {
     "Parabéns pela poupança! 🎉"
   ];
 
+  const equivalenceMessages = [
+    () => `Equivalente a ${equivalentShowers} duches mais curtos 🚿`,
+    () => `Equivalente a ${equivalentBottles} garrafas de água 💧`,
+    () => `Água suficiente para lavar as mãos ${equivalentHandwashes} vezes 🧼`,
+    () => "Baseado nos teus registos diários 💙",
+    () => "Estimativa calculada a partir das tuas atividades"
+  ];
+
 
   const [randomMessage, setRandomMessage] = useState('');
+  const [randomEquivalence, setRandomEquivalence] = useState('');
 
   useEffect(() => {
     const msg = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+    const eq = equivalenceMessages[Math.floor(Math.random() * equivalenceMessages.length)]();
     setRandomMessage(msg);
+    setRandomEquivalence(eq);
   }, []);
 
   return (
@@ -67,7 +85,7 @@ export function Dashboard({ onAdd }: DashboardProps) {
 
           <div className="space-y-2">
             <Progress value={progressPercentage} color="white" className="h-3 bg-white/30" />
-            <p className="text-sm opacity-90">{progressPercentage.toFixed(0)}% da meta mensal</p>
+            <p className="text-sm opacity-90">{randomEquivalence}</p>
           </div>
         </Card>
       </motion.div>
@@ -84,7 +102,7 @@ export function Dashboard({ onAdd }: DashboardProps) {
               className="w-full h-12 bg-blue-600 text-xl text-white shadow-lg flex items-center justify-center"
           >
             <Plus className="w-5 h-5 mr-2" aria-hidden="true" />
-            Adicionar Consumo
+            Registar atividade
           </Button>
         </div>
       </motion.div>
