@@ -99,7 +99,7 @@ export function Dashboard({ onAdd }: DashboardProps) {
         <div className="px-6">
           <Button
               onClick={() => onAdd && onAdd()}
-              className="w-full h-12 bg-blue-600 text-xl text-white shadow-lg flex items-center justify-center"
+              className="w-full h-12 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 text-xl text-white shadow-lg flex items-center justify-center"
           >
             <Plus className="w-5 h-5 mr-2" aria-hidden="true" />
             Registar atividade
