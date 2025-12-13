@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
-import { Target, CheckCircle2, Clock, TrendingUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Droplet, ShowerHead, Clock, CheckCircle2 } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Progress } from '../ui/progress';
 import { Badge } from '../ui/badge';
@@ -12,32 +13,48 @@ export function Metas() {
       current: 1250,
       target: 2000,
       status: "active",
-      icon: Target
+      icon: Droplet
     },
     {
       id: 2,
-      title: "Reduzir 40% do consumo",
-      current: 35,
-      target: 40,
+      title: "Duches até 5 minutos (10 dias)",
+      current: 6,
+      target: 10,
       status: "active",
-      icon: TrendingUp
+      icon: ShowerHead
     },
     {
       id: 3,
-      title: "10 dias seguidos",
+      title: "Registar atividades 10 dias seguidos",
       current: 10,
       target: 10,
       status: "completed",
       icon: CheckCircle2
-    },
+    }
   ];
 
   const history = [
-    { month: "Novembro", saved: 1250, status: "current" },
+    { month: "Dezembro", saved: 1300, status: "current" },
+    { month: "Novembro", saved: 1250, status: "completed" },
     { month: "Outubro", saved: 2150, status: "completed" },
     { month: "Setembro", saved: 1890, status: "completed" },
-    { month: "Agosto", saved: 1670, status: "completed" },
   ];
+
+  const historySubtitles = (item) => [
+    `${item.saved}L poupados`,
+    `${Math.round(item.saved / 40)} atividades registadas`
+  ];
+
+  const [subtitleIndex, setSubtitleIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSubtitleIndex(prev => (prev === 0 ? 1 : 0));
+    }, 5000); // troca a cada 5s
+
+    return () => clearInterval(interval);
+  }, []);
+
 
   return (
     <div className="p-6 space-y-6">
@@ -121,7 +138,16 @@ export function Metas() {
                     )}
                     <div>
                       <p className="text-gray-800">{item.month}</p>
-                      <p className="text-sm text-gray-600">{item.saved}L poupados</p>
+                      <motion.p
+                          key={subtitleIndex}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.4 }}
+                          className="text-sm text-gray-600"
+                      >
+                        {historySubtitles(item)[subtitleIndex]}
+                      </motion.p>
+
                     </div>
                   </div>
                   {item.status === 'current' && (
