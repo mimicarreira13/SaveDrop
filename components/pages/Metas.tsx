@@ -1,8 +1,9 @@
 import { motion } from 'motion/react';
-import { Target, CheckCircle2, Clock, TrendingUp } from 'lucide-react';
-import { Card } from './ui/card';
-import { Progress } from './ui/progress';
-import { Badge } from './ui/badge';
+import { useEffect, useState } from 'react';
+import { Droplet, ShowerHead, Clock, CheckCircle2 } from 'lucide-react';
+import { Card } from '../ui/card';
+import { Progress } from '../ui/progress';
+import { Badge } from '../ui/badge';
 
 export function Metas() {
   const goals = [
@@ -12,32 +13,48 @@ export function Metas() {
       current: 1250,
       target: 2000,
       status: "active",
-      icon: Target
+      icon: Droplet
     },
     {
       id: 2,
-      title: "10 dias seguidos",
+      title: "Duches até 5 minutos (10 dias)",
+      current: 6,
+      target: 10,
+      status: "active",
+      icon: ShowerHead
+    },
+    {
+      id: 3,
+      title: "Registar atividades 10 dias seguidos",
       current: 10,
       target: 10,
       status: "completed",
       icon: CheckCircle2
-    },
-    {
-      id: 3,
-      title: "Reduzir 40% do consumo",
-      current: 35,
-      target: 40,
-      status: "active",
-      icon: TrendingUp
     }
   ];
 
   const history = [
-    { month: "Novembro", saved: 1250, status: "current" },
+    { month: "Dezembro", saved: 1300, status: "current" },
+    { month: "Novembro", saved: 1250, status: "completed" },
     { month: "Outubro", saved: 2150, status: "completed" },
     { month: "Setembro", saved: 1890, status: "completed" },
-    { month: "Agosto", saved: 1670, status: "completed" },
   ];
+
+  const historySubtitles = (item) => [
+    `${item.saved}L poupados`,
+    `${Math.round(item.saved / 40)} atividades registadas`
+  ];
+
+  const [subtitleIndex, setSubtitleIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSubtitleIndex(prev => (prev === 0 ? 1 : 0));
+    }, 5000); // troca a cada 5s
+
+    return () => clearInterval(interval);
+  }, []);
+
 
   return (
     <div className="p-6 space-y-6">
@@ -48,7 +65,7 @@ export function Metas() {
         transition={{ duration: 0.5 }}
       >
         <h1 className="text-blue-600 mb-2">As Suas Metas</h1>
-        <p className="text-gray-600">Acompanhe o seu progresso</p>
+        <p className="text-gray-600 font-bold bold">Acompanhe o seu progresso</p>
       </motion.div>
 
       {/* Active Goals */}
@@ -88,7 +105,12 @@ export function Metas() {
                     <Badge variant="outline" className="border-blue-500 text-blue-600">Ativa</Badge>
                   )}
                 </div>
-                <Progress value={progress} className={`h-2 ${isCompleted ? 'bg-green-200' : ''}`} />
+                <Progress
+                    value={isCompleted ? 100 : progress}
+                    color={isCompleted ? "green" : "blue"}
+                    animate={!isCompleted}
+                    className={`h-2 ${isCompleted ? "bg-green-200 opacity-40" : ""}`}
+                />
               </Card>
             </motion.div>
           );
@@ -116,7 +138,16 @@ export function Metas() {
                     )}
                     <div>
                       <p className="text-gray-800">{item.month}</p>
-                      <p className="text-sm text-gray-600">{item.saved}L poupados</p>
+                      <motion.p
+                          key={subtitleIndex}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.4 }}
+                          className="text-sm text-gray-600"
+                      >
+                        {historySubtitles(item)[subtitleIndex]}
+                      </motion.p>
+
                     </div>
                   </div>
                   {item.status === 'current' && (

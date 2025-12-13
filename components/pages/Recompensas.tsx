@@ -1,47 +1,49 @@
 import { motion } from 'motion/react';
 import { Trophy, Award, Star, Lock } from 'lucide-react';
-import { Card } from './ui/card';
-import { Avatar, AvatarFallback } from './ui/avatar';
-import { Badge } from './ui/badge';
+import { Card } from '../ui/card';
+import {cn} from '../ui/utils';
+import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Progress } from '../ui/progress';
+import { Badge } from '../ui/badge';
 
 export function Recompensas() {
   const badges = [
     {
       id: 1,
       name: "Primeira Gota",
-      description: "Complete seu primeiro dia",
+      description: "Registaste a tua primeira atividade",
       icon: "💧",
       unlocked: true,
-      date: "01/10/2025"
+      date: "01/12/2025"
     },
     {
       id: 2,
       name: "Semana Completa",
-      description: "7 dias de sequência",
+      description: "7 dias seguidos de poupança",
       icon: "🌊",
       unlocked: true,
-      date: "07/10/2025"
+      date: "07/12/2025"
     },
     {
       id: 3,
       name: "Economizador",
-      description: "Economize 1000L",
+      description: "1000L poupados",
       icon: "⭐",
       unlocked: true,
-      date: "20/10/2025"
+      date: "19/12/2025"
     },
     {
       id: 4,
       name: "Mestre da Água",
-      description: "30 dias de sequência",
+      description: "30 dias seguidos de poupança",
       icon: "🏆",
       unlocked: false,
-      progress: "15/30 dias"
+      progress: "19/30 dias"
     },
     {
       id: 5,
       name: "Guardião do Planeta",
-      description: "Economize 5000L",
+      description: "5000L poupados",
       icon: "🌍",
       unlocked: false,
       progress: "1250/5000L"
@@ -94,14 +96,11 @@ export function Recompensas() {
             <div className="flex-1">
               <h2 className="mb-1">Nível {userLevel}</h2>
               <p className="text-sm opacity-90 mb-2">Eco Guerreiro</p>
-              <div className="bg-white/30 rounded-full h-2 mb-1">
-                <motion.div
-                  className="bg-white h-full rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${levelProgress}%` }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                />
-              </div>
+              <Progress
+                  value={levelProgress}
+                  color="white"
+                  className="bg-white/30 h-2 mb-1"
+              />
               <p className="text-xs opacity-90">{userPoints} / {nextLevelPoints} pontos</p>
             </div>
           </div>
@@ -134,11 +133,14 @@ export function Recompensas() {
               transition={{ duration: 0.3, delay: index * 0.1 }}
               whileHover={{ scale: badge.unlocked ? 1.05 : 1 }}
             >
-              <Card className={`p-4 text-center ${
-                badge.unlocked 
-                  ? 'bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-300' 
-                  : 'bg-gray-50 border-gray-300'
-              }`}>
+              <Card
+                  className={cn(
+                      "flex flex-col justify-between items-center text-center p-4 h-60",
+                      badge.unlocked
+                          ? "bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-300"
+                          : "bg-gray-50 border-gray-300"
+                  )}
+              >
                 <div className="relative mb-2">
                   <motion.div
                     className={`text-4xl mb-2 ${!badge.unlocked ? 'opacity-30' : ''}`}
