@@ -11,39 +11,39 @@ export function Recompensas() {
     {
       id: 1,
       name: "Primeira Gota",
-      description: "Complete seu primeiro dia",
+      description: "Registaste a tua primeira atividade",
       icon: "💧",
       unlocked: true,
-      date: "01/10/2025"
+      date: "01/12/2025"
     },
     {
       id: 2,
       name: "Semana Completa",
-      description: "7 dias de sequência",
+      description: "7 dias seguidos de poupança",
       icon: "🌊",
       unlocked: true,
-      date: "07/10/2025"
+      date: "07/12/2025"
     },
     {
       id: 3,
       name: "Economizador",
-      description: "Economize 1000L",
+      description: "1000L poupados",
       icon: "⭐",
       unlocked: true,
-      date: "20/10/2025"
+      date: "19/12/2025"
     },
     {
       id: 4,
       name: "Mestre da Água",
-      description: "30 dias de sequência",
+      description: "30 dias seguidos de poupança",
       icon: "🏆",
       unlocked: false,
-      progress: "15/30 dias"
+      progress: "19/30 dias"
     },
     {
       id: 5,
       name: "Guardião do Planeta",
-      description: "Economize 5000L",
+      description: "5000L poupados",
       icon: "🌍",
       unlocked: false,
       progress: "1250/5000L"
