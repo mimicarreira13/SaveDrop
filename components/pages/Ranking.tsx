@@ -23,63 +23,23 @@ export function Ranking() {
 
     const randomEmojis = getRandomEmojis(faceEmojis, 4);
 
-  const topUsers = useMemo(
-      () => [
-        {
-          id: 1,
-          name: generateRandomName(),
-          avatar: randomEmojis[0],
-          saved: 3450,
-          rank: 1,
-          change: "up",
-          color: "bg-yellow-500",
-        },
-        {
-          id: 2,
-          name: generateRandomName(),
-          avatar: randomEmojis[1],
-          saved: 2890,
-          rank: 2,
-          change: "same",
-          color: "bg-gray-400",
-        },
-        {
-          id: 3,
-          name: generateRandomName(),
-          avatar: randomEmojis[2],
-          saved: 2340,
-          rank: 3,
-          change: "up",
-          color: "bg-orange-600",
-        },
-        {
-          id: 4,
-          name: "Você",
-          avatar: "💧",
-          saved: 1250,
-          rank: 4,
-          change: "down",
-          color: "bg-blue-500",
-          isUser: true,
-        },
-        {
-          id: 5,
-          name: generateRandomName(),
-          avatar: randomEmojis[3],
-          saved: 980,
-          rank: 5,
-          change: "up",
-          color: "bg-green-500",
-        },
-      ],
-      []
-  );
+    const topUsers = useMemo(
+        () => [
+            { id: 1, name: generateRandomName(), avatar: randomEmojis[0], points: 3450, saved: 3450, rank: 1, change: "up", color: "bg-yellow-500" },
+            { id: 2, name: generateRandomName(), avatar: randomEmojis[1], points: 2890, saved: 2890, rank: 2, change: "same", color: "bg-gray-400" },
+            { id: 3, name: generateRandomName(), avatar: randomEmojis[2], points: 2340, saved: 2340, rank: 3, change: "up", color: "bg-orange-600" },
+            { id: 4, name: "Você", avatar: "💧", points: 1250, saved: 1250, rank: 4, change: "down", color: "bg-blue-500", isUser: true },
+            { id: 5, name: generateRandomName(), avatar: randomEmojis[3], points: 980, saved: 980, rank: 5, change: "up", color: "bg-green-500" },
+        ],
+        []
+    );
 
-  const stats = [
-    { label: "A Sua Posição", value: "4º", icon: Trophy, color: "text-blue-600" },
-    { label: "Pontos", value: "1250", icon: Award, color: "text-green-600" },
-    { label: "Variação", value: "-1", icon: TrendingUp, color: "text-orange-600" }
-  ];
+    const stats = [
+        { label: "A Sua Posição", value: "4º", icon: Trophy, color: "text-blue-600" },
+        { label: "Pontos", value: "1250", icon: Award, color: "text-green-600" },
+        { label: "Variação", value: "-1", icon: TrendingUp, color: "text-orange-600" }
+    ];
+
 
   return (
     <div className="p-6 space-y-6">
@@ -203,7 +163,7 @@ export function Ranking() {
                     <p className={`${user.isUser ? 'text-blue-800' : 'text-gray-800'}`}>
                       {user.name}
                     </p>
-                    <p className="text-sm text-gray-600">{user.saved}L poupados</p>
+                      <p className="text-sm text-gray-600">{user.points} pts</p>
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-1">
@@ -232,8 +192,11 @@ export function Ranking() {
         <Card className="p-4 bg-gradient-to-r from-green-100 to-blue-100 border-green-300">
           <div className="text-center">
             <h4 className="text-gray-800 mb-2">Desafio da Semana</h4>
-            <p className="text-sm text-gray-600 mb-3">Economize 500L e suba no ranking!</p>
-            <motion.button
+              <p className="text-sm text-gray-600 mb-3">
+                  Reduzir tempo de duche em 2 minutos durante 5 dias
+              </p>
+
+              <motion.button
               className="px-6 py-2 bg-green-500 text-white rounded-lg"
               whileTap={{ scale: 0.95 }}
             >
