@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Dashboard } from './components/pages/Dashboard/Dashboard';
 import { Metas } from './components/pages/Metas/Metas';
-import { Recompensas } from './components/pages/Recompensas';
+import { Recompensas } from './components/pages/Recompensas/Recompensas';
 import { Ranking } from './components/pages/Ranking';
 import { Mascote } from './components/pages/Mascote';
 import { AdicionarConsumo } from './components/pages/AdicionarConsumo/AdicionarConsumo';
