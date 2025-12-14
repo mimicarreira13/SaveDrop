@@ -17,6 +17,7 @@ import {
     updateDashboardFromLogs,
     hasBaseline
 } from './consumoLogic';
+import { getBaselineForActivity as getPredictedBaseline } from './baselinePrediction'; // Importar a nova função
 
 interface AdicionarConsumoState {
     selectedActivity: Activity | null;
@@ -153,18 +154,9 @@ export const useAdicionarConsumo = (userBaselines?: UserBaselines, onSave?: () =
         return ACTIVITIES.find(a => a.id === id);
     }, []);
 
-    // Obter baseline para atividade
+    // Obter baseline para atividade (agora com baselines preditas)
     const getBaselineForActivity = useCallback((activityId: string): number | null => {
-        if (!userBaselines || !hasBaseline(activityId)) return null;
-
-        const baselineMap: Record<string, keyof UserBaselines> = {
-            'duche': 'duche',
-            'lavar-dentes': 'dentes',
-            'lavar-loica-mao': 'loica'
-        };
-
-        const baselineKey = baselineMap[activityId];
-        return baselineKey ? userBaselines[baselineKey] : null;
+        return getPredictedBaseline(activityId, userBaselines);
     }, [userBaselines]);
 
     return {

@@ -5,6 +5,7 @@ export interface Activity {
     category: string;
     unit: 'minutes' | 'times' | 'liters';
     avgLitersPerUnit: number;
+    hasBaseline: boolean;
 }
 
 export interface ActivityLog {
@@ -27,28 +28,28 @@ export interface UserBaselines {
 // ATIVIDADES
 export const ACTIVITIES: Activity[] = [
     // Higiene pessoal
-    { id: 'duche', name: 'Duche', icon: 'Droplet', category: 'Higiene pessoal', unit: 'minutes', avgLitersPerUnit: 12 },
-    { id: 'banho', name: 'Banho de imersão', icon: 'Bath', category: 'Higiene pessoal', unit: 'minutes', avgLitersPerUnit: 20 },
-    { id: 'lavar-maos', name: 'Lavar mãos', icon: 'Hand', category: 'Higiene pessoal', unit: 'times', avgLitersPerUnit: 2 },
-    { id: 'lavar-dentes', name: 'Lavar dentes', icon: 'Sparkles', category: 'Higiene pessoal', unit: 'minutes', avgLitersPerUnit: 3 },
-    { id: 'fazer-barba', name: 'Fazer barba', icon: 'Scissors', category: 'Higiene pessoal', unit: 'minutes', avgLitersPerUnit: 4 },
-    { id: 'lavar-rosto', name: 'Lavar rosto', icon: 'Sparkles', category: 'Higiene pessoal', unit: 'times', avgLitersPerUnit: 3 },
+    { id: 'duche', name: 'Duche', icon: 'Droplet', category: 'Higiene pessoal', unit: 'minutes', avgLitersPerUnit: 12, hasBaseline: true },
+    { id: 'banho', name: 'Banho de imersão', icon: 'Bath', category: 'Higiene pessoal', unit: 'minutes', avgLitersPerUnit: 20, hasBaseline: false },
+    { id: 'lavar-maos', name: 'Lavar mãos', icon: 'Hand', category: 'Higiene pessoal', unit: 'times', avgLitersPerUnit: 2, hasBaseline: false },
+    { id: 'lavar-dentes', name: 'Lavar dentes', icon: 'Sparkles', category: 'Higiene pessoal', unit: 'minutes', avgLitersPerUnit: 3, hasBaseline: true },
+    { id: 'fazer-barba', name: 'Fazer barba', icon: 'Scissors', category: 'Higiene pessoal', unit: 'minutes', avgLitersPerUnit: 4, hasBaseline: false },
+    { id: 'lavar-rosto', name: 'Lavar rosto', icon: 'Sparkles', category: 'Higiene pessoal', unit: 'times', avgLitersPerUnit: 3, hasBaseline: false },
 
     // Cozinha / Torneiras
-    { id: 'lavar-loica-mao', name: 'Lavar loiça à mão', icon: 'Utensils', category: 'Cozinha / Torneiras', unit: 'minutes', avgLitersPerUnit: 8 },
-    { id: 'torneira-aberta', name: 'Torneira aberta', icon: 'Coffee', category: 'Cozinha / Torneiras', unit: 'minutes', avgLitersPerUnit: 10 },
+    { id: 'lavar-loica-mao', name: 'Lavar loiça à mão', icon: 'Utensils', category: 'Cozinha / Torneiras', unit: 'minutes', avgLitersPerUnit: 8, hasBaseline: true },
+    { id: 'torneira-aberta', name: 'Torneira aberta', icon: 'Coffee', category: 'Cozinha / Torneiras', unit: 'minutes', avgLitersPerUnit: 10, hasBaseline: false },
 
     // Lavagem
-    { id: 'maq-roupa', name: 'Máquina de lavar roupa', icon: 'Shirt', category: 'Lavagem', unit: 'times', avgLitersPerUnit: 60 },
-    { id: 'maq-loica', name: 'Máquina de lavar loiça', icon: 'RotateCw', category: 'Lavagem', unit: 'times', avgLitersPerUnit: 15 },
+    { id: 'maq-roupa', name: 'Máquina de lavar roupa', icon: 'Shirt', category: 'Lavagem', unit: 'times', avgLitersPerUnit: 60, hasBaseline: false },
+    { id: 'maq-loica', name: 'Máquina de lavar loiça', icon: 'RotateCw', category: 'Lavagem', unit: 'times', avgLitersPerUnit: 15, hasBaseline: false },
 
-    // Casa de banho
+/*    // Casa de banho
     { id: 'autoclismo', name: 'Autoclismo', icon: 'Circle', category: 'Casa de banho', unit: 'times', avgLitersPerUnit: 6 },
-    { id: 'encher-banheira', name: 'Encher banheira', icon: 'Bath', category: 'Casa de banho', unit: 'times', avgLitersPerUnit: 150 },
+    { id: 'encher-banheira', name: 'Encher banheira', icon: 'Bath', category: 'Casa de banho', unit: 'times', avgLitersPerUnit: 150 },*/
 
     // Exterior / Outros
-    { id: 'regar-plantas', name: 'Regar plantas', icon: 'Leaf', category: 'Exterior / Outros', unit: 'minutes', avgLitersPerUnit: 15 },
-    { id: 'lavar-carro', name: 'Lavar carro', icon: 'Car', category: 'Exterior / Outros', unit: 'minutes', avgLitersPerUnit: 25 }
+    { id: 'regar-plantas', name: 'Regar plantas', icon: 'Leaf', category: 'Exterior / Outros', unit: 'minutes', avgLitersPerUnit: 15, hasBaseline: false },
+    { id: 'lavar-carro', name: 'Lavar carro', icon: 'Car', category: 'Exterior / Outros', unit: 'minutes', avgLitersPerUnit: 25, hasBaseline: false }
 ];
 
 // HISTÓRICO INICIAL
@@ -87,6 +88,19 @@ export const INITIAL_ACTIVITY_LOG: ActivityLog[] = [
 
 // ATIVIDADES COM BASELINE
 export const ACTIVITIES_WITH_BASELINE = ['duche', 'lavar-dentes', 'lavar-loica-mao'];
+
+// ATIVIDADES COM BASELINE PREVISTO
+export const ACTIVITY_TYPES_WITH_PREDICTED_BASELINE = [
+    'banho',           // Higiene pessoal
+    'fazer-barba',     // Higiene pessoal
+    'lavar-rosto',     // Higiene pessoal
+    'lavar-maos',      // Higiene pessoal
+    'torneira-aberta', // Cozinha / Torneiras
+    'maq-roupa',       // Lavagem (fixo)
+    'maq-loica',       // Lavagem (fixo)
+    'regar-plantas',   // Exterior / Outros (fixo)
+    'lavar-carro'      // Exterior / Outros (fixo)
+] as const;
 
 // Chaves para localStorage
 export const STORAGE_KEYS = {

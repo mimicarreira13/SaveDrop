@@ -1,25 +1,15 @@
-import { Activity, ActivityLog, UserBaselines, ACTIVITIES_WITH_BASELINE, STORAGE_KEYS } from './atividadesData';
+import { ActivityLog, UserBaselines, STORAGE_KEYS } from './atividadesData';
+import { getBaselineForActivity, hasAnyBaseline } from './baselinePrediction';
 
-// Funções de cálculo PURAS
+// Funções de cálculo atualizadas para usar baselines preditas
 export const calculateSavings = (
     activityId: string,
     amount: number,
     litersPerUnit: number,
     userBaselines?: UserBaselines
 ): number => {
-    if (!userBaselines || !ACTIVITIES_WITH_BASELINE.includes(activityId)) return 0;
-
-    const baselineMap: Record<string, keyof UserBaselines> = {
-        'duche': 'duche',
-        'lavar-dentes': 'dentes',
-        'lavar-loica-mao': 'loica'
-    };
-
-    const baselineKey = baselineMap[activityId];
-    if (!baselineKey) return 0;
-
-    const baselineAmount = userBaselines[baselineKey];
-    if (!baselineAmount) return 0;
+    const baselineAmount = getBaselineForActivity(activityId, userBaselines);
+    if (baselineAmount === null) return 0;
 
     const expectedLiters = baselineAmount * litersPerUnit;
     const realLiters = amount * litersPerUnit;
@@ -103,7 +93,7 @@ export const updateDashboardFromLogs = (logs: ActivityLog[]) => {
     }
 };
 
-// Verificar se atividade tem baseline
+// Verificar se atividade tem baseline (agora inclui preditas)
 export const hasBaseline = (activityId: string): boolean => {
-    return ACTIVITIES_WITH_BASELINE.includes(activityId);
+    return hasAnyBaseline(activityId);
 };

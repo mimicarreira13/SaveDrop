@@ -248,28 +248,34 @@ export function AdicionarConsumo({ onSave, onCancel, userBaselines }: AdicionarC
                                     </div>
                                 </Card>
 
+                                // No modal, modificar a parte que mostra as baselines:
                                 {hasBaseline(state.selectedActivity.id) && userBaselines && (
                                     <Card className="p-3 bg-green-50 border-green-200">
                                         <div className="text-sm">
                                             <p className="font-medium text-green-800 mb-1">💧 Poupança de Água</p>
                                             <div className="space-y-1">
                                                 <div className="flex justify-between text-xs">
-                                                    <span className="text-gray-600">Seu normal:</span>
+                                                    <span className="text-gray-600">Baseline esperado:</span>
                                                     <span className="text-green-700">
-                                                        {getBaselineForActivity(state.selectedActivity.id)} {getUnitLabel(state.selectedActivity.unit)}
-                                                    </span>
+                        {getBaselineForActivity(state.selectedActivity.id)} {getUnitLabel(state.selectedActivity.unit)}
+                    </span>
+                                                    <span className="text-gray-500 text-xs">
+                        {['duche', 'lavar-dentes', 'lavar-loica-mao'].includes(state.selectedActivity.id)
+                            ? '(do questionário)'
+                            : '(estimado)'}
+                    </span>
                                                 </div>
                                                 <div className="flex justify-between text-xs">
                                                     <span className="text-gray-600">Registado:</span>
                                                     <span className="text-blue-700">
-                                                        {state.amount} {getUnitLabel(state.selectedActivity.unit)}
-                                                    </span>
+                        {state.amount} {getUnitLabel(state.selectedActivity.unit)}
+                    </span>
                                                 </div>
                                                 <div className="flex justify-between text-xs font-medium">
                                                     <span className="text-gray-700">Poupança:</span>
                                                     <span className="text-green-700">
-                                                        {calculateSavings(state.selectedActivity.id, state.amount, state.selectedActivity.avgLitersPerUnit)}L
-                                                    </span>
+                        {calculateSavings(state.selectedActivity.id, state.amount, state.selectedActivity.avgLitersPerUnit)}L
+                    </span>
                                                 </div>
                                             </div>
                                         </div>
