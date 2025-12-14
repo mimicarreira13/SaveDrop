@@ -87,7 +87,7 @@ export const createInitialGoals = (
 
 // Dados iniciais do histórico
 export const INITIAL_HISTORY: HistoryItem[] = [
-    { month: "Dezembro", saved: 1300, status: "current" },
+    { month: "Dezembro", saved: 1250, status: "current" },
     { month: "Novembro", saved: 1250, status: "completed" },
     { month: "Outubro", saved: 2150, status: "completed" },
     { month: "Setembro", saved: 1890, status: "completed" },

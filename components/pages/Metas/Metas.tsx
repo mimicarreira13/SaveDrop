@@ -1,7 +1,7 @@
 'use client';
 import { motion } from 'motion/react';
 import { useState } from 'react';
-import { Droplet, ShowerHead, CheckCircle2, Clock, Plus, RefreshCw, Tooth, Droplets, Shirt, Sprout } from 'lucide-react';
+import { Droplet, ShowerHead, CheckCircle2, Clock, Plus, RefreshCw } from 'lucide-react';
 import { Card } from '../../ui/card';
 import { Progress } from '../../ui/progress';
 import { Badge } from '../../ui/badge';
