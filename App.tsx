@@ -6,7 +6,7 @@ import { Metas } from './components/pages/Metas';
 import { Recompensas } from './components/pages/Recompensas';
 import { Ranking } from './components/pages/Ranking';
 import { Mascote } from './components/pages/Mascote';
-import { AdicionarConsumo } from './components/pages/AdicionarConsumo';
+import { AdicionarConsumo } from './components/pages/AdicionarConsumo/AdicionarConsumo';
 import { QuestionarioInicial } from './components/pages/QuestionarioInicial';
 import { Droplet, Target, Trophy, Users, Heart } from 'lucide-react';
 
