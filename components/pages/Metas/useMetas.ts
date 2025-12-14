@@ -1,6 +1,7 @@
+// src/app/metas/useMetas.ts
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import { Goal, HistoryItem, createInitialGoals, INITIAL_HISTORY } from './metasData';
+import { Goal, HistoryItem, createInitialGoals } from './metasData';
 import {
     loadGoalsFromStorage,
     saveGoalsToStorage,
@@ -10,14 +11,14 @@ import {
     createNewGoal,
     getHistorySubtitle,
     refreshGoalsWithDashboardData,
-    getCurrentDashboardData,
     formatProgressValue
 } from './metasLogic';
+import { initializeAppData } from '../../../utils/dataSync';
 
 export const useMetas = () => {
     // Estado
     const [goals, setGoals] = useState<Goal[]>([]);
-    const [history, setHistory] = useState<HistoryItem[]>(INITIAL_HISTORY);
+    const [history, setHistory] = useState<HistoryItem[]>([]);
     const [expandedGoalId, setExpandedGoalId] = useState<number | null>(null);
     const [showAddGoalDialog, setShowAddGoalDialog] = useState(false);
     const [subtitleIndex, setSubtitleIndex] = useState(0);
@@ -28,21 +29,27 @@ export const useMetas = () => {
         const loadInitialData = () => {
             setIsLoading(true);
 
+            // INICIALIZA OS DADOS DA APP (garante que dashboard existe)
+            initializeAppData();
+
             const savedGoals = loadGoalsFromStorage();
             const savedHistory = loadHistoryFromStorage();
 
             if (savedGoals.length > 0) {
                 setGoals(savedGoals);
             } else {
-                // Cria metas iniciais com dados atuais
-                const currentData = getCurrentDashboardData();
-                const initialGoals = createInitialGoals(currentData.waterSaved, currentData.daysStreak);
+                // Cria metas iniciais com dados atuais DO DASHBOARD
+                const initialGoals = createInitialGoals();
                 setGoals(initialGoals);
                 saveGoalsToStorage(initialGoals);
             }
 
             if (savedHistory.length > 0) {
                 setHistory(savedHistory);
+            } else {
+                // Se não há histórico, carrega o padrão atualizado
+                const initialHistory = loadHistoryFromStorage();
+                setHistory(initialHistory);
             }
 
             setIsLoading(false);
@@ -62,6 +69,9 @@ export const useMetas = () => {
                 }
                 return updated;
             });
+
+            // Também atualiza o histórico
+            setHistory(loadHistoryFromStorage());
         }, 10000); // Atualiza a cada 10 segundos
 
         return () => clearInterval(updateGoalsInterval);
@@ -89,7 +99,6 @@ export const useMetas = () => {
         });
     }, []);
 
-    // ATUALIZADA para receber activityType
     const handleAddGoal = useCallback((title: string, target: number, type: string, activityType?: string) => {
         const newGoal = createNewGoal(title, target, type, activityType);
         setGoals(prev => {
@@ -117,13 +126,15 @@ export const useMetas = () => {
         return formatProgressValue(goal);
     }, []);
 
-    // Atualizar metas com dados mais recentes (para ser chamado manualmente se necessário)
+    // Atualizar metas com dados mais recentes
     const refreshGoals = useCallback(() => {
         setGoals(prev => {
             const updated = refreshGoalsWithDashboardData(prev);
             saveGoalsToStorage(updated);
             return updated;
         });
+        // Atualiza o histórico também
+        setHistory(loadHistoryFromStorage());
     }, []);
 
     return {

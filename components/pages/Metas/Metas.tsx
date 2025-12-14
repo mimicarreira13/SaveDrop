@@ -1,3 +1,4 @@
+// src/components/pages/Metas/Metas.tsx
 'use client';
 import { motion } from 'motion/react';
 import { useState } from 'react';
@@ -13,6 +14,7 @@ import { calculateGoalProgress } from './metasLogic';
 import { getIcon } from '../../../utils/iconUtils';
 import { ACTIVITY_LABELS, ACTIVITY_TYPES } from './metasData';
 
+// REMOVA userBaselines dos props - não é mais necessário aqui
 export function Metas() {
     const {
         goals,
@@ -191,7 +193,7 @@ export function Metas() {
                                                 </p>
                                             )}
                                             <p>
-                                                <span className="font-medium">Fonte de dados:</span> Dashboard atual
+                                                <span className="font-medium">Progresso atual:</span> {goal.current} / {goal.target}
                                             </p>
                                             <p>
                                                 <span className="font-medium">Atualizado:</span> Automaticamente
@@ -291,7 +293,7 @@ export function Metas() {
                 </Button>
             </motion.div>
 
-            {/* Dialog para adicionar nova meta (FORMULÁRIO COMPLETO) */}
+            {/* Dialog para adicionar nova meta */}
             {showAddGoalDialog && (
                 <div
                     className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
@@ -372,7 +374,7 @@ export function Metas() {
                                 />
                             </div>
 
-                            {/* Seletor de Atividade (aparece apenas para activity_streak) */}
+                            {/* Seletor de Atividade */}
                             {newGoalData.type === 'activity_streak' && (
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -422,7 +424,7 @@ export function Metas() {
                             </div>
 
                             {/* Pré-visualização */}
-                            {newGoalData.title || newGoalData.target ? (
+                            {(newGoalData.title || newGoalData.target) && (
                                 <div className="p-3 bg-gray-50 rounded-md">
                                     <p className="text-sm text-gray-600 mb-1">Pré-visualização:</p>
                                     <p className="font-medium text-gray-800">
@@ -431,7 +433,7 @@ export function Metas() {
                                         {newGoalData.activityType && ` (${ACTIVITY_LABELS[newGoalData.activityType as keyof typeof ACTIVITY_LABELS] || newGoalData.activityType})`}
                                     </p>
                                 </div>
-                            ) : null}
+                            )}
                         </div>
 
                         <div className="flex gap-2 mt-6">

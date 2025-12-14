@@ -1,4 +1,4 @@
-// File: `App.tsx`
+// src/App.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import { Dashboard } from './components/pages/Dashboard/Dashboard';
@@ -9,6 +9,7 @@ import { Mascote } from './components/pages/Mascote';
 import { AdicionarConsumo } from './components/pages/AdicionarConsumo/AdicionarConsumo';
 import { QuestionarioInicial } from './components/pages/QuestionarioInicial';
 import { Droplet, Target, Trophy, Users, Heart } from 'lucide-react';
+import { AppInitializer, initializeAppData } from './components/AppInitializer';
 
 // Tipo para as baselines do utilizador
 type UserBaselines = {
@@ -25,12 +26,28 @@ export default function App() {
 
   // Verificar no localStorage ao carregar
   useEffect(() => {
+    // INICIALIZA OS DADOS DA APP PRIMEIRO
+    initializeAppData();
+
     const completed = localStorage.getItem('waterApp_questionnaire') === 'completed';
     const savedBaselines = localStorage.getItem('waterApp_baselines');
 
     if (completed && savedBaselines) {
       try {
-        setUserBaselines(JSON.parse(savedBaselines));
+        const parsedBaselines = JSON.parse(savedBaselines);
+        setUserBaselines(parsedBaselines);
+
+        // Garante que os dados do dashboard existem para as metas
+        if (!localStorage.getItem('savedrop_dashboard')) {
+          localStorage.setItem('savedrop_dashboard', JSON.stringify({
+            waterSaved: 1250,
+            daysStreak: 6,
+            goalWater: 2000,
+            baseWaterSaved: 1250,
+            accumulatedSavings: 0,
+            lastUpdate: new Date().toISOString()
+          }));
+        }
       } catch (e) {
         console.error('Erro ao ler baselines:', e);
       }
@@ -46,6 +63,9 @@ export default function App() {
     setHasCompletedQuestionnaire(true);
     localStorage.setItem('waterApp_questionnaire', 'completed');
     localStorage.setItem('waterApp_baselines', JSON.stringify(answers));
+
+    // Inicializa os dados da app após o questionário
+    initializeAppData();
   };
 
   // Mostrar loading enquanto verifica
@@ -68,6 +88,9 @@ export default function App() {
   // App normal após questionário
   return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50">
+        {/* Componente que inicializa dados */}
+        <AppInitializer />
+
         {/* Mobile Container */}
         <div className="max-w-md mx-auto min-h-screen bg-white shadow-xl flex flex-col">
           {/* Content Area */}
@@ -78,7 +101,7 @@ export default function App() {
                     userBaselines={userBaselines}
                 />
             )}
-            {activeTab === 'metas' && <Metas userBaselines={userBaselines} />}
+            {activeTab === 'metas' && <Metas />}
             {activeTab === 'recompensas' && <Recompensas />}
             {activeTab === 'ranking' && <Ranking />}
             {activeTab === 'mascote' && <Mascote />}

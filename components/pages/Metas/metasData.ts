@@ -1,3 +1,6 @@
+// src/app/metas/metasData.ts
+import { getCurrentDashboardData, getUpdatedHistory } from '../../../utils/dataSync';
+
 export interface Goal {
     id: number;
     title: string;
@@ -6,7 +9,7 @@ export interface Goal {
     status: 'active' | 'completed';
     icon: string;
     type: 'water_saving' | 'shower_time' | 'activity_streak';
-    activityType?: string; // Nova propriedade opcional para atividades específicas
+    activityType?: string;
 }
 
 export interface HistoryItem {
@@ -51,41 +54,48 @@ export const ACTIVITY_ICONS: Record<ActivityType, string> = {
     [ACTIVITY_TYPES.GARDEN_WATERING]: 'Sprout'
 };
 
-// Função para criar metas INICIAIS com valores dinâmicos
-export const createInitialGoals = (
-    waterSaved: number = 1250,
-    daysStreak: number = 6
-): Goal[] => [
-    {
-        id: 1,
-        title: "Poupar 2000L este mês",
-        current: waterSaved,
-        target: 2000,
-        status: waterSaved >= 2000 ? 'completed' : 'active',
-        icon: "Droplet",
-        type: 'water_saving'
-    },
-    {
-        id: 2,
-        title: "Duches até 5 minutos (10 dias)",
-        current: daysStreak,
-        target: 10,
-        status: daysStreak >= 10 ? 'completed' : 'active',
-        icon: "ShowerHead",
-        type: 'shower_time'
-    },
-    {
-        id: 3,
-        title: "Registar atividades 10 dias seguidos",
-        current: 10,
-        target: 10,
-        status: daysStreak >= 10 ? 'completed' : 'active',
-        icon: "CheckCircle2",
-        type: 'activity_streak'
-    }
-];
+// Função para criar metas INICIAIS com valores DINÂMICOS do dashboard
+export const createInitialGoals = (): Goal[] => {
+    const dashboardData = getCurrentDashboardData();
+    const { waterSaved, daysStreak } = dashboardData;
 
-// Dados iniciais do histórico
+    return [
+        {
+            id: 1,
+            title: "Poupar 2000L este mês",
+            current: waterSaved,
+            target: 2000,
+            status: waterSaved >= 2000 ? 'completed' : 'active',
+            icon: "Droplet",
+            type: 'water_saving'
+        },
+        {
+            id: 2,
+            title: "Duches até 5 minutos (10 dias)",
+            current: daysStreak,
+            target: 10,
+            status: daysStreak >= 10 ? 'completed' : 'active',
+            icon: "ShowerHead",
+            type: 'shower_time'
+        },
+        {
+            id: 3,
+            title: "Registar atividades 10 dias seguidos",
+            current: Math.min(daysStreak, 10),
+            target: 10,
+            status: daysStreak >= 10 ? 'completed' : 'active',
+            icon: "CheckCircle2",
+            type: 'activity_streak'
+        }
+    ];
+};
+
+// Função para obter histórico ATUALIZADO
+export const getInitialHistory = (): HistoryItem[] => {
+    return getUpdatedHistory();
+};
+
+// Dados iniciais do histórico (mantido para compatibilidade)
 export const INITIAL_HISTORY: HistoryItem[] = [
     { month: "Dezembro", saved: 1250, status: "current" },
     { month: "Novembro", saved: 1250, status: "completed" },

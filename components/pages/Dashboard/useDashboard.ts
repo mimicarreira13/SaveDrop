@@ -1,3 +1,4 @@
+// src/app/dashboard/useDashboard.ts
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import {
@@ -13,6 +14,7 @@ import {
     calculateStatsValues,
     updateStreak
 } from './dashboardLogic';
+import { initializeAppData } from '../../../utils/dataSync';
 
 export const useDashboard = () => {
     // Estado do dashboard
@@ -22,6 +24,9 @@ export const useDashboard = () => {
 
     // Inicializar dashboard
     useEffect(() => {
+        // INICIALIZA OS DADOS DA APP
+        initializeAppData();
+
         const storedData = loadDashboardFromStorage();
         const updatedData: DashboardData = {
             ...INITIAL_DASHBOARD_DATA,

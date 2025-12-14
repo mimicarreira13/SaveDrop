@@ -1,6 +1,8 @@
+// src/app/dashboard/dashboardLogic.ts
 import { LITERS_PER_BOTTLE, LITERS_PER_SHORT_SHOWER, LITERS_PER_HANDWASH } from './dashboardData';
+import { updateGoalsWithCurrentData } from '../Metas/metasLogic';
 
-// Funções de cálculo PURAS (sem JSX, sem React)
+// Funções de cálculo PURAS
 export const calculateEquivalents = (waterSaved: number) => ({
     bottles: Math.floor(waterSaved / LITERS_PER_BOTTLE),
     showers: Math.floor(waterSaved / LITERS_PER_SHORT_SHOWER),
@@ -32,7 +34,7 @@ export const getRandomEquivalence = (waterSaved: number) => {
     return messages[Math.floor(Math.random() * messages.length)];
 };
 
-// Função para calcular dados das estatísticas (apenas valores)
+// Função para calcular dados das estatísticas
 export const calculateStatsValues = (
     waterSaved: number,
     goalWater: number,
@@ -43,7 +45,7 @@ export const calculateStatsValues = (
     return [
         {
             label: "Progresso",
-            value: `${Math.min(Math.max(progressPercentage, 0), 100)}%` // Limita entre 0% e 100%
+            value: `${Math.min(Math.max(progressPercentage, 0), 100)}%`
         },
         {
             label: "Sequência",
@@ -55,12 +57,11 @@ export const calculateStatsValues = (
 // Funções de localStorage
 export const loadDashboardFromStorage = (): { waterSaved: number; daysStreak: number } => {
     try {
-        // Tenta carregar do dashboard normal
+        // Tenta carregar do dashboard
         const dashboardData = localStorage.getItem('savedrop_dashboard');
         if (dashboardData) {
             const parsed = JSON.parse(dashboardData);
 
-            // Se já tem dados, retorna-os
             if (parsed.waterSaved !== undefined && parsed.daysStreak !== undefined) {
                 return {
                     waterSaved: parsed.waterSaved,
@@ -75,9 +76,8 @@ export const loadDashboardFromStorage = (): { waterSaved: number; daysStreak: nu
             try {
                 const logs = JSON.parse(savedLogs);
                 if (Array.isArray(logs) && logs.length > 0) {
-                    // Calcula o total baseado nos logs
                     const totalSavedFromActivities = logs.reduce((total, log) => total + (log.savedLiters || 0), 0);
-                    const totalWaterSaved = 1250 + totalSavedFromActivities; // Base + poupanças
+                    const totalWaterSaved = 1250 + totalSavedFromActivities;
 
                     return {
                         waterSaved: totalWaterSaved,
@@ -105,23 +105,53 @@ export const loadDashboardFromStorage = (): { waterSaved: number; daysStreak: nu
 
 export const saveDashboardToStorage = (waterSaved: number, daysStreak: number) => {
     try {
-        // Calcula as poupanças acumuladas (removendo o base)
+        // Calcula as poupanças acumuladas
         const accumulatedSavings = waterSaved - 1250;
 
         // Salva no formato novo
-        localStorage.setItem('savedrop_dashboard', JSON.stringify({
+        const dashboardData = {
             waterSaved,
             daysStreak,
             goalWater: 2000,
             lastUpdate: new Date().toISOString(),
             baseWaterSaved: 1250,
             accumulatedSavings
-        }));
+        };
 
-        // Mantém compatibilidade com o formato antigo
+        localStorage.setItem('savedrop_dashboard', JSON.stringify(dashboardData));
+
+        // Mantém compatibilidade
         localStorage.setItem('dashboard_waterSaved', waterSaved.toString());
         localStorage.setItem('dashboard_daysStreak', daysStreak.toString());
 
+        // SINCRONIZA AS METAS AUTOMATICAMENTE
+        try {
+            const goalsData = localStorage.getItem('savedrop_user_goals');
+            if (goalsData) {
+                const goals = JSON.parse(goalsData);
+                const updatedGoals = goals.map((goal: any) => {
+                    if (goal.type === 'water_saving') {
+                        return {
+                            ...goal,
+                            current: waterSaved,
+                            status: waterSaved >= goal.target ? 'completed' : 'active'
+                        };
+                    } else if (goal.type === 'shower_time' || goal.type === 'activity_streak') {
+                        return {
+                            ...goal,
+                            current: Math.min(daysStreak, goal.target),
+                            status: daysStreak >= goal.target ? 'completed' : 'active'
+                        };
+                    }
+                    return goal;
+                });
+                localStorage.setItem('savedrop_user_goals', JSON.stringify(updatedGoals));
+            }
+        } catch (e) {
+            console.error('Erro ao sincronizar metas:', e);
+        }
+
+        return dashboardData;
     } catch (error) {
         console.error('Erro ao guardar dashboard:', error);
     }
@@ -133,7 +163,7 @@ export const updateStreak = (currentStreak: number): number => {
     const today = new Date().toDateString();
 
     if (lastActivity === today) {
-        return currentStreak; // Já atualizou hoje
+        return currentStreak;
     }
 
     if (lastActivity) {
@@ -141,10 +171,8 @@ export const updateStreak = (currentStreak: number): number => {
         const diffDays = Math.floor((new Date().getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
 
         if (diffDays === 1) {
-            // Consecutivo
             return currentStreak + 1;
         } else if (diffDays > 1) {
-            // Quebrou a sequência
             return 1;
         }
     }
@@ -153,7 +181,7 @@ export const updateStreak = (currentStreak: number): number => {
     return currentStreak;
 };
 
-// Função para obter apenas as poupanças acumuladas (sem o base)
+// Função para obter apenas as poupanças acumuladas
 export const getAccumulatedSavings = (): number => {
     try {
         const dashboardData = localStorage.getItem('savedrop_dashboard');

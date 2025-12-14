@@ -1,10 +1,11 @@
+// src/app/consumo/consumoLogic.ts
 import { ActivityLog, UserBaselines, STORAGE_KEYS } from './atividadesData';
 import { getBaselineForActivity, hasAnyBaseline } from './baselinePrediction';
 
 // Constante com o valor base
 const BASE_WATER_SAVED = 1250;
 
-// Funções de cálculo atualizadas para usar baselines preditas e permitir valores negativos
+// Funções de cálculo atualizadas
 export const calculateSavings = (
     activityId: string,
     amount: number,
@@ -18,8 +19,7 @@ export const calculateSavings = (
     const realLiters = amount * litersPerUnit;
     const savedLiters = expectedLiters - realLiters;
 
-    // Permite valores negativos (quando excede o baseline)
-    return savedLiters; // Retorna positivo ou negativo
+    return savedLiters;
 };
 
 export const getUnitLabel = (unit: string): string => {
@@ -66,7 +66,7 @@ export const saveActivityLogToStorage = (logs: ActivityLog[]) => {
 
 export const updateDashboardFromLogs = (logs: ActivityLog[]) => {
     try {
-        // Soma todas as poupanças (positivas e negativas)
+        // Soma todas as poupanças
         const totalSavedFromActivities = logs.reduce((total, log) => total + (log.savedLiters || 0), 0);
 
         // Valor total = Base + Poupanças acumuladas
@@ -74,7 +74,7 @@ export const updateDashboardFromLogs = (logs: ActivityLog[]) => {
 
         const today = new Date().toDateString();
 
-        // Calcular streak (só incrementa se houver poupança positiva HOJE)
+        // Calcular streak
         let daysStreak = 0;
         const dashboardData = localStorage.getItem(STORAGE_KEYS.DASHBOARD);
         let dashboard = dashboardData ? JSON.parse(dashboardData) : { daysStreak: 0, waterSaved: BASE_WATER_SAVED };
@@ -84,7 +84,6 @@ export const updateDashboardFromLogs = (logs: ActivityLog[]) => {
         );
 
         if (hasActivityToday) {
-            // Verifica se hoje teve poupança positiva líquida
             const todaySaved = logs
                 .filter(log => new Date(log.timestamp).toDateString() === today)
                 .reduce((total, log) => total + (log.savedLiters || 0), 0);
@@ -92,7 +91,6 @@ export const updateDashboardFromLogs = (logs: ActivityLog[]) => {
             if (todaySaved > 0) {
                 daysStreak = (dashboard.daysStreak || 0) > 0 ? dashboard.daysStreak + 1 : 1;
             } else {
-                // Se teve poupança negativa ou zero, mantém a streak atual
                 daysStreak = dashboard.daysStreak || 0;
             }
         } else {
@@ -101,33 +99,61 @@ export const updateDashboardFromLogs = (logs: ActivityLog[]) => {
 
         // Atualizar dashboard
         const updatedDashboard = {
-            waterSaved: totalWaterSaved, // Base + poupanças acumuladas
+            waterSaved: totalWaterSaved,
             daysStreak: daysStreak,
             goalWater: 2000,
             lastUpdate: new Date().toISOString(),
-            baseWaterSaved: BASE_WATER_SAVED, // Guardar o valor base para referência
-            accumulatedSavings: totalSavedFromActivities // Poupanças acumuladas
+            baseWaterSaved: BASE_WATER_SAVED,
+            accumulatedSavings: totalSavedFromActivities
         };
 
         localStorage.setItem(STORAGE_KEYS.DASHBOARD, JSON.stringify(updatedDashboard));
+
+        // SINCRONIZA AS METAS IMEDIATAMENTE
+        setTimeout(() => {
+            try {
+                const goalsData = localStorage.getItem('savedrop_user_goals');
+                if (goalsData) {
+                    const goals = JSON.parse(goalsData);
+                    const updatedGoals = goals.map((goal: any) => {
+                        if (goal.type === 'water_saving') {
+                            return {
+                                ...goal,
+                                current: totalWaterSaved,
+                                status: totalWaterSaved >= goal.target ? 'completed' : 'active'
+                            };
+                        } else if (goal.type === 'shower_time' || goal.type === 'activity_streak') {
+                            return {
+                                ...goal,
+                                current: Math.min(daysStreak, goal.target),
+                                status: daysStreak >= goal.target ? 'completed' : 'active'
+                            };
+                        }
+                        return goal;
+                    });
+                    localStorage.setItem('savedrop_user_goals', JSON.stringify(updatedGoals));
+                }
+            } catch (e) {
+                console.error('Erro ao sincronizar metas:', e);
+            }
+        }, 100);
 
     } catch (error) {
         console.error('Erro ao atualizar dashboard:', error);
     }
 };
 
-// Verificar se atividade tem baseline (agora inclui preditas)
+// Verificar se atividade tem baseline
 export const hasBaseline = (activityId: string): boolean => {
     return hasAnyBaseline(activityId);
 };
 
-// Função para obter o valor base (útil para outros módulos)
+// Função para obter o valor base
 export const getBaseWaterSaved = (): number => {
     return BASE_WATER_SAVED;
 };
 
-// Adicionar esta função no final do ficheiro
-// Função para formatar o valor de água poupada para display
+// Função para formatar o valor de água poupada
 export const formatWaterSavedDisplay = (waterSaved: number): string => {
     const base = 1250;
     const accumulated = waterSaved - base;

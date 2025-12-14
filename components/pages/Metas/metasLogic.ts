@@ -1,4 +1,6 @@
+// src/app/metas/metasLogic.ts
 import { Goal, HistoryItem, STORAGE_KEYS, createInitialGoals, ACTIVITY_ICONS } from './metasData';
+import { getCurrentDashboardData, getUpdatedHistory } from '../../../utils/dataSync';
 
 // Funções de cálculo PURAS
 export const calculateGoalProgress = (current: number, target: number): number => {
@@ -25,24 +27,7 @@ export const getHistorySubtitle = (item: HistoryItem, index: number): string => 
     return subtitles[index % subtitles.length];
 };
 
-// Função para obter dados atuais do dashboard
-export const getCurrentDashboardData = (): { waterSaved: number; daysStreak: number } => {
-    try {
-        const dashboardData = localStorage.getItem(STORAGE_KEYS.DASHBOARD);
-        if (dashboardData) {
-            const parsed = JSON.parse(dashboardData);
-            return {
-                waterSaved: parsed.waterSaved,
-                daysStreak: parsed.daysStreak,
-            };
-        }
-    } catch (error) {
-        console.error('Erro ao carregar dados do dashboard:', error);
-    }
-    return { waterSaved: 1250, daysStreak: 12 };
-};
-
-// Funções de localStorage
+// Funções de localStorage (sincronizadas com dashboard)
 export const loadGoalsFromStorage = (): Goal[] => {
     try {
         // 1. Tenta carregar metas personalizadas
@@ -50,7 +35,7 @@ export const loadGoalsFromStorage = (): Goal[] => {
         if (savedGoals) {
             const goals = JSON.parse(savedGoals);
             if (Array.isArray(goals) && goals.length > 0) {
-                // Atualiza metas padrão com dados atuais
+                // Atualiza metas com dados atuais DO DASHBOARD
                 return updateGoalsWithCurrentData(goals);
             }
         }
@@ -58,12 +43,11 @@ export const loadGoalsFromStorage = (): Goal[] => {
         console.error('Erro ao carregar metas:', error);
     }
 
-    // 2. Se não tem metas salvas, cria com dados atuais
-    const currentData = getCurrentDashboardData();
-    return createInitialGoals(currentData.waterSaved, currentData.daysStreak);
+    // 2. Se não tem metas salvas, cria com dados atuais DO DASHBOARD
+    return createInitialGoals();
 };
 
-// Atualizar metas com dados atuais
+// Atualizar metas com dados atuais DO DASHBOARD
 export const updateGoalsWithCurrentData = (goals: Goal[]): Goal[] => {
     const currentData = getCurrentDashboardData();
 
@@ -101,17 +85,20 @@ export const saveGoalsToStorage = (goals: Goal[]) => {
 
 export const loadHistoryFromStorage = (): HistoryItem[] => {
     try {
-        const savedHistory = localStorage.getItem(STORAGE_KEYS.GOALS_HISTORY);
-        if (savedHistory) {
-            const history = JSON.parse(savedHistory);
-            if (Array.isArray(history) && history.length > 0) {
-                return history;
-            }
-        }
+        // Usa a função do dataSync para pegar histórico ATUALIZADO
+        return getUpdatedHistory();
     } catch (error) {
         console.error('Erro ao carregar histórico:', error);
     }
-    return []; // Retorna array vazio se não houver histórico
+
+    // Fallback com dados do dashboard
+    const dashboardData = getCurrentDashboardData();
+    return [
+        { month: "Dezembro", saved: dashboardData.waterSaved, status: "current" },
+        { month: "Novembro", saved: 1250, status: "completed" },
+        { month: "Outubro", saved: 2150, status: "completed" },
+        { month: "Setembro", saved: 1890, status: "completed" },
+    ];
 };
 
 export const saveHistoryToStorage = (history: HistoryItem[]) => {
@@ -135,7 +122,7 @@ export const updateGoalProgress = (
     );
 };
 
-// Função para adicionar nova meta (ATUALIZADA para suportar activityType)
+// Função para adicionar nova meta
 export const createNewGoal = (
     title: string,
     target: number,
@@ -153,7 +140,7 @@ export const createNewGoal = (
         iconMap[type] = ACTIVITY_ICONS[activityType as keyof typeof ACTIVITY_ICONS];
     }
 
-    // Obtém dados atuais para definir current inicial
+    // Obtém dados atuais DO DASHBOARD
     const currentData = getCurrentDashboardData();
     let initialCurrent = 0;
 
