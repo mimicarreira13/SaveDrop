@@ -64,7 +64,7 @@ export const loadDashboardFromStorage = (): { waterSaved: number; daysStreak: nu
             if (parsed.waterSaved !== undefined && parsed.daysStreak !== undefined) {
                 return {
                     waterSaved: parsed.waterSaved,
-                    daysStreak: parsed.daysStreak 
+                    daysStreak: parsed.daysStreak
                 };
             }
         }
