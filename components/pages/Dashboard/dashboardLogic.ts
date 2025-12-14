@@ -9,6 +9,19 @@ export const calculateEquivalents = (waterSaved: number) => ({
 
 export const getRandomEquivalence = (waterSaved: number) => {
     const equivalents = calculateEquivalents(waterSaved);
+
+    // Se for menor que o base (1250), mostra mensagem de alerta
+    if (waterSaved < 1250) {
+        const messages = [
+            `⚠️ Atenção! Consumo acima do normal`,
+            `📈 Estás a gastar mais água que o habitual`,
+            `💡 Tem espaço para melhorar o consumo`,
+            `🌍 Cada gota conta para o planeta`,
+            `🚰 Podes reduzir o consumo de água`
+        ];
+        return messages[Math.floor(Math.random() * messages.length)];
+    }
+
     const messages = [
         `Equivalente a ${equivalents.showers} duches mais curtos 🚿`,
         `Equivalente a ${equivalents.bottles} garrafas de água 💧`,
@@ -30,7 +43,7 @@ export const calculateStatsValues = (
     return [
         {
             label: "Progresso",
-            value: `${progressPercentage}%`
+            value: `${Math.min(Math.max(progressPercentage, 0), 100)}%` // Limita entre 0% e 100%
         },
         {
             label: "Sequência",
@@ -42,6 +55,41 @@ export const calculateStatsValues = (
 // Funções de localStorage
 export const loadDashboardFromStorage = (): { waterSaved: number; daysStreak: number } => {
     try {
+        // Tenta carregar do dashboard normal
+        const dashboardData = localStorage.getItem('savedrop_dashboard');
+        if (dashboardData) {
+            const parsed = JSON.parse(dashboardData);
+
+            // Se já tem dados, retorna-os
+            if (parsed.waterSaved !== undefined && parsed.daysStreak !== undefined) {
+                return {
+                    waterSaved: parsed.waterSaved,
+                    daysStreak: parsed.daysStreak || 12
+                };
+            }
+        }
+
+        // Fallback: verifica se há logs para calcular o valor
+        const savedLogs = localStorage.getItem('savedrop_activity_log');
+        if (savedLogs) {
+            try {
+                const logs = JSON.parse(savedLogs);
+                if (Array.isArray(logs) && logs.length > 0) {
+                    // Calcula o total baseado nos logs
+                    const totalSavedFromActivities = logs.reduce((total, log) => total + (log.savedLiters || 0), 0);
+                    const totalWaterSaved = 1250 + totalSavedFromActivities; // Base + poupanças
+
+                    return {
+                        waterSaved: totalWaterSaved,
+                        daysStreak: 12
+                    };
+                }
+            } catch (e) {
+                console.error('Erro ao calcular a partir dos logs:', e);
+            }
+        }
+
+        // Fallback para valores antigos
         const savedWater = localStorage.getItem('dashboard_waterSaved');
         const savedStreak = localStorage.getItem('dashboard_daysStreak');
 
@@ -57,8 +105,23 @@ export const loadDashboardFromStorage = (): { waterSaved: number; daysStreak: nu
 
 export const saveDashboardToStorage = (waterSaved: number, daysStreak: number) => {
     try {
+        // Calcula as poupanças acumuladas (removendo o base)
+        const accumulatedSavings = waterSaved - 1250;
+
+        // Salva no formato novo
+        localStorage.setItem('savedrop_dashboard', JSON.stringify({
+            waterSaved,
+            daysStreak,
+            goalWater: 2000,
+            lastUpdate: new Date().toISOString(),
+            baseWaterSaved: 1250,
+            accumulatedSavings
+        }));
+
+        // Mantém compatibilidade com o formato antigo
         localStorage.setItem('dashboard_waterSaved', waterSaved.toString());
         localStorage.setItem('dashboard_daysStreak', daysStreak.toString());
+
     } catch (error) {
         console.error('Erro ao guardar dashboard:', error);
     }
@@ -88,4 +151,18 @@ export const updateStreak = (currentStreak: number): number => {
 
     localStorage.setItem('last_activity_date', today);
     return currentStreak;
+};
+
+// Função para obter apenas as poupanças acumuladas (sem o base)
+export const getAccumulatedSavings = (): number => {
+    try {
+        const dashboardData = localStorage.getItem('savedrop_dashboard');
+        if (dashboardData) {
+            const parsed = JSON.parse(dashboardData);
+            return parsed.accumulatedSavings || 0;
+        }
+        return 0;
+    } catch (error) {
+        return 0;
+    }
 };

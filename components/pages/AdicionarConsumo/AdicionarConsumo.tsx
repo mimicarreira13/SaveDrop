@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import {
     Droplet, Bath, Hand, Sparkles, Scissors, Utensils, Coffee,
     Shirt, RotateCw, Circle, Leaf, Car, Clock, Hash,
-    Save, X, ChevronDown, ChevronUp, Check, AlertCircle
+    Save, X, ChevronDown, ChevronUp, Check, AlertCircle, AlertTriangle
 } from 'lucide-react';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
@@ -12,7 +12,7 @@ import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
 
 import { useAdicionarConsumo } from './useAdicionarConsumo';
-import { getIcon } from '../../../utils/iconUtils'; // Vamos criar este helper
+import { getIcon } from '../../../utils/iconUtils';
 
 interface AdicionarConsumoProps {
     onSave: () => void;
@@ -44,6 +44,12 @@ export function AdicionarConsumo({ onSave, onCancel, userBaselines }: AdicionarC
         calculateSavings
     } = useAdicionarConsumo(userBaselines, onSave);
 
+    // Calcular poupança para preview
+    const getCurrentSavings = () => {
+        if (!state.selectedActivity) return 0;
+        return calculateSavings(state.selectedActivity.id, state.amount, state.selectedActivity.avgLitersPerUnit);
+    };
+
     return (
         <div className="p-6 space-y-6 min-h-screen pb-24">
             {/* Header com botão de voltar */}
@@ -73,15 +79,45 @@ export function AdicionarConsumo({ onSave, onCancel, userBaselines }: AdicionarC
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="bg-gradient-to-r from-green-100 to-emerald-100 border border-green-300 rounded-lg p-4 mb-4"
+                    className={`rounded-lg p-4 mb-4 ${
+                        state.successMessage.includes('Atenção')
+                            ? 'bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300'
+                            : state.successMessage.includes('Poupaste')
+                                ? 'bg-gradient-to-r from-green-100 to-emerald-100 border border-green-300'
+                                : 'bg-gradient-to-r from-blue-100 to-cyan-100 border border-blue-300'
+                    }`}
                 >
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-green-500 rounded-full">
-                            <Check className="w-5 h-5 text-white" />
+                        <div className={`p-2 rounded-full ${
+                            state.successMessage.includes('Atenção')
+                                ? 'bg-amber-500'
+                                : state.successMessage.includes('Poupaste')
+                                    ? 'bg-green-500'
+                                    : 'bg-blue-500'
+                        }`}>
+                            {state.successMessage.includes('Atenção') ? (
+                                <AlertTriangle className="w-5 h-5 text-white" />
+                            ) : (
+                                <Check className="w-5 h-5 text-white" />
+                            )}
                         </div>
                         <div>
-                            <p className="text-green-800 font-medium">{state.successMessage}</p>
-                            <p className="text-green-700 text-sm mt-1">
+                            <p className={`font-medium ${
+                                state.successMessage.includes('Atenção')
+                                    ? 'text-amber-800'
+                                    : state.successMessage.includes('Poupaste')
+                                        ? 'text-green-800'
+                                        : 'text-blue-800'
+                            }`}>
+                                {state.successMessage}
+                            </p>
+                            <p className={`text-sm mt-1 ${
+                                state.successMessage.includes('Atenção')
+                                    ? 'text-amber-700'
+                                    : state.successMessage.includes('Poupaste')
+                                        ? 'text-green-700'
+                                        : 'text-blue-700'
+                            }`}>
                                 A redirecionar para o dashboard...
                             </p>
                         </div>
@@ -176,11 +212,23 @@ export function AdicionarConsumo({ onSave, onCancel, userBaselines }: AdicionarC
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                <Card className="p-3 bg-white border-gray-200">
+                                <Card className="p-3 bg-white ">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-blue-50 rounded-full">
-                                                <Icon className="w-4 h-4 text-blue-600" />
+                                            <div className={`p-2 rounded-full ${
+                                                log.savedLiters > 0
+                                                    ? 'bg-green-50'
+                                                    : log.savedLiters < 0
+                                                        ? 'bg-red-50'
+                                                        : 'bg-blue-50'
+                                            }`}>
+                                                <Icon className={`w-4 h-4 ${
+                                                    log.savedLiters > 0
+                                                        ? 'text-green-600'
+                                                        : log.savedLiters < 0
+                                                            ? 'text-red-600'
+                                                            : 'text-blue-600'
+                                                }`} />
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-800">{log.activityName}</p>
@@ -194,6 +242,11 @@ export function AdicionarConsumo({ onSave, onCancel, userBaselines }: AdicionarC
                                             {log.savedLiters > 0 && (
                                                 <p className="text-xs text-green-600 font-medium">
                                                     +{log.savedLiters}L poupados
+                                                </p>
+                                            )}
+                                            {log.savedLiters < 0 && (
+                                                <p className="text-xs text-red-600 font-medium">
+                                                    {log.savedLiters}L poupados
                                                 </p>
                                             )}
                                         </div>
@@ -248,34 +301,61 @@ export function AdicionarConsumo({ onSave, onCancel, userBaselines }: AdicionarC
                                     </div>
                                 </Card>
 
-                                // No modal, modificar a parte que mostra as baselines:
                                 {hasBaseline(state.selectedActivity.id) && userBaselines && (
-                                    <Card className="p-3 bg-green-50 border-green-200">
+                                    <Card className={`p-3 ${
+                                        getCurrentSavings() > 0
+                                            ? 'bg-green-50 border-green-200'
+                                            : getCurrentSavings() < 0
+                                                ? 'bg-red-50 border-red-200'
+                                                : 'bg-gray-50 border-gray-200'
+                                    }`}>
                                         <div className="text-sm">
-                                            <p className="font-medium text-green-800 mb-1">💧 Poupança de Água</p>
+                                            <p className={`font-medium mb-1 ${
+                                                getCurrentSavings() > 0
+                                                    ? 'text-green-800'
+                                                    : getCurrentSavings() < 0
+                                                        ? 'text-red-800'
+                                                        : 'text-gray-800'
+                                            }`}>
+                                                {getCurrentSavings() > 0 ? '💧 Poupança de Água' :
+                                                    getCurrentSavings() < 0 ? '⚠️ Consumo Excedente' :
+                                                        '📊 Registro de Consumo'}
+                                            </p>
                                             <div className="space-y-1">
                                                 <div className="flex justify-between text-xs">
                                                     <span className="text-gray-600">Baseline esperado:</span>
-                                                    <span className="text-green-700">
-                        {getBaselineForActivity(state.selectedActivity.id)} {getUnitLabel(state.selectedActivity.unit)}
-                    </span>
+                                                    <span className={`${
+                                                        getCurrentSavings() > 0
+                                                            ? 'text-green-700'
+                                                            : getCurrentSavings() < 0
+                                                                ? 'text-red-700'
+                                                                : 'text-gray-700'
+                                                    }`}>
+                                                        {getBaselineForActivity(state.selectedActivity!.id)} {getUnitLabel(state.selectedActivity.unit)}
+                                                    </span>
                                                     <span className="text-gray-500 text-xs">
-                        {['duche', 'lavar-dentes', 'lavar-loica-mao'].includes(state.selectedActivity.id)
-                            ? '(do questionário)'
-                            : '(estimado)'}
-                    </span>
+                                                        {['duche', 'lavar-dentes', 'lavar-loica-mao'].includes(state.selectedActivity.id)
+                                                            ? '(do questionário)'
+                                                            : '(estimado)'}
+                                                    </span>
                                                 </div>
                                                 <div className="flex justify-between text-xs">
                                                     <span className="text-gray-600">Registado:</span>
                                                     <span className="text-blue-700">
-                        {state.amount} {getUnitLabel(state.selectedActivity.unit)}
-                    </span>
+                                                        {state.amount} {getUnitLabel(state.selectedActivity.unit)}
+                                                    </span>
                                                 </div>
                                                 <div className="flex justify-between text-xs font-medium">
-                                                    <span className="text-gray-700">Poupança:</span>
-                                                    <span className="text-green-700">
-                        {calculateSavings(state.selectedActivity.id, state.amount, state.selectedActivity.avgLitersPerUnit)}L
-                    </span>
+                                                    <span className="text-gray-700">Resultado:</span>
+                                                    <span className={`${
+                                                        getCurrentSavings() > 0
+                                                            ? 'text-green-700'
+                                                            : getCurrentSavings() < 0
+                                                                ? 'text-red-700'
+                                                                : 'text-gray-700'
+                                                    }`}>
+                                                        {getCurrentSavings() > 0 ? '+' : ''}{getCurrentSavings()}L
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>

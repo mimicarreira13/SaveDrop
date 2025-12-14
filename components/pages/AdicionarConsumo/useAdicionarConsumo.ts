@@ -17,7 +17,7 @@ import {
     updateDashboardFromLogs,
     hasBaseline
 } from './consumoLogic';
-import { getBaselineForActivity as getPredictedBaseline } from './baselinePrediction'; // Importar a nova função
+import { getBaselineForActivity as getPredictedBaseline } from './baselinePrediction';
 
 interface AdicionarConsumoState {
     selectedActivity: Activity | null;
@@ -75,7 +75,7 @@ export const useAdicionarConsumo = (userBaselines?: UserBaselines, onSave?: () =
             icon: state.selectedActivity.icon,
             amount: state.amount,
             liters,
-            savedLiters,
+            savedLiters, // Pode ser positivo ou negativo
             timestamp: now
         };
 
@@ -85,10 +85,15 @@ export const useAdicionarConsumo = (userBaselines?: UserBaselines, onSave?: () =
         saveActivityLogToStorage(updatedLogs);
         updateDashboardFromLogs(updatedLogs);
 
-        // Mostrar mensagem de sucesso
+        // Mensagem personalizada baseada na poupança
         let message = `✅ ${state.selectedActivity.name} registado com sucesso!`;
         if (savedLiters > 0) {
             message += ` Poupaste ${savedLiters}L de água!`;
+        } else if (savedLiters < 0) {
+            const absoluteValue = Math.abs(savedLiters);
+            message += ` Atenção! Consumiste ${absoluteValue}L a mais que o habitual.`;
+        } else {
+            message += ` Consumo registado.`;
         }
 
         setState(prev => ({

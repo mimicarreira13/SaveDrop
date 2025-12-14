@@ -1,7 +1,10 @@
 import { ActivityLog, UserBaselines, STORAGE_KEYS } from './atividadesData';
 import { getBaselineForActivity, hasAnyBaseline } from './baselinePrediction';
 
-// Funções de cálculo atualizadas para usar baselines preditas
+// Constante com o valor base
+const BASE_WATER_SAVED = 1250;
+
+// Funções de cálculo atualizadas para usar baselines preditas e permitir valores negativos
 export const calculateSavings = (
     activityId: string,
     amount: number,
@@ -15,7 +18,8 @@ export const calculateSavings = (
     const realLiters = amount * litersPerUnit;
     const savedLiters = expectedLiters - realLiters;
 
-    return savedLiters > 0 ? savedLiters : 0;
+    // Permite valores negativos (quando excede o baseline)
+    return savedLiters; // Retorna positivo ou negativo
 };
 
 export const getUnitLabel = (unit: string): string => {
@@ -62,28 +66,47 @@ export const saveActivityLogToStorage = (logs: ActivityLog[]) => {
 
 export const updateDashboardFromLogs = (logs: ActivityLog[]) => {
     try {
-        const totalSavedLiters = logs.reduce((total, log) => total + (log.savedLiters || 0), 0);
+        // Soma todas as poupanças (positivas e negativas)
+        const totalSavedFromActivities = logs.reduce((total, log) => total + (log.savedLiters || 0), 0);
+
+        // Valor total = Base + Poupanças acumuladas
+        const totalWaterSaved = BASE_WATER_SAVED + totalSavedFromActivities;
+
         const today = new Date().toDateString();
 
-        // Calcular streak
+        // Calcular streak (só incrementa se houver poupança positiva HOJE)
         let daysStreak = 0;
         const dashboardData = localStorage.getItem(STORAGE_KEYS.DASHBOARD);
-        let dashboard = dashboardData ? JSON.parse(dashboardData) : { daysStreak: 0 };
+        let dashboard = dashboardData ? JSON.parse(dashboardData) : { daysStreak: 0, waterSaved: BASE_WATER_SAVED };
 
         const hasActivityToday = logs.some(log =>
             new Date(log.timestamp).toDateString() === today
         );
 
         if (hasActivityToday) {
-            daysStreak = dashboard.daysStreak > 0 ? dashboard.daysStreak + 1 : 1;
+            // Verifica se hoje teve poupança positiva líquida
+            const todaySaved = logs
+                .filter(log => new Date(log.timestamp).toDateString() === today)
+                .reduce((total, log) => total + (log.savedLiters || 0), 0);
+
+            if (todaySaved > 0) {
+                daysStreak = (dashboard.daysStreak || 0) > 0 ? dashboard.daysStreak + 1 : 1;
+            } else {
+                // Se teve poupança negativa ou zero, mantém a streak atual
+                daysStreak = dashboard.daysStreak || 0;
+            }
+        } else {
+            daysStreak = dashboard.daysStreak || 0;
         }
 
         // Atualizar dashboard
         const updatedDashboard = {
-            waterSaved: totalSavedLiters,
+            waterSaved: totalWaterSaved, // Base + poupanças acumuladas
             daysStreak: daysStreak,
             goalWater: 2000,
-            lastUpdate: new Date().toISOString()
+            lastUpdate: new Date().toISOString(),
+            baseWaterSaved: BASE_WATER_SAVED, // Guardar o valor base para referência
+            accumulatedSavings: totalSavedFromActivities // Poupanças acumuladas
         };
 
         localStorage.setItem(STORAGE_KEYS.DASHBOARD, JSON.stringify(updatedDashboard));
@@ -96,4 +119,24 @@ export const updateDashboardFromLogs = (logs: ActivityLog[]) => {
 // Verificar se atividade tem baseline (agora inclui preditas)
 export const hasBaseline = (activityId: string): boolean => {
     return hasAnyBaseline(activityId);
+};
+
+// Função para obter o valor base (útil para outros módulos)
+export const getBaseWaterSaved = (): number => {
+    return BASE_WATER_SAVED;
+};
+
+// Adicionar esta função no final do ficheiro
+// Função para formatar o valor de água poupada para display
+export const formatWaterSavedDisplay = (waterSaved: number): string => {
+    const base = 1250;
+    const accumulated = waterSaved - base;
+
+    if (accumulated === 0) {
+        return `${waterSaved}L`;
+    } else if (accumulated > 0) {
+        return `${waterSaved}L (+${accumulated})`;
+    } else {
+        return `${waterSaved}L (${accumulated})`;
+    }
 };
