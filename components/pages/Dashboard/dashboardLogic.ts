@@ -64,7 +64,7 @@ export const loadDashboardFromStorage = (): { waterSaved: number; daysStreak: nu
             if (parsed.waterSaved !== undefined && parsed.daysStreak !== undefined) {
                 return {
                     waterSaved: parsed.waterSaved,
-                    daysStreak: parsed.daysStreak || 12
+                    daysStreak: parsed.daysStreak 
                 };
             }
         }
@@ -81,7 +81,7 @@ export const loadDashboardFromStorage = (): { waterSaved: number; daysStreak: nu
 
                     return {
                         waterSaved: totalWaterSaved,
-                        daysStreak: 12
+                        daysStreak: 10
                     };
                 }
             } catch (e) {
@@ -95,11 +95,11 @@ export const loadDashboardFromStorage = (): { waterSaved: number; daysStreak: nu
 
         return {
             waterSaved: savedWater ? Number(savedWater) : 1250,
-            daysStreak: savedStreak ? Number(savedStreak) : 12
+            daysStreak: savedStreak ? Number(savedStreak) : 10
         };
     } catch (error) {
         console.error('Erro ao carregar dashboard:', error);
-        return { waterSaved: 1250, daysStreak: 12 };
+        return { waterSaved: 1250, daysStreak: 10 };
     }
 };
 

@@ -37,5 +37,5 @@ export interface DashboardData {
 export const INITIAL_DASHBOARD_DATA: DashboardData = {
     waterSaved: 1250,
     goalWater: 2000,
-    daysStreak: 12
+    daysStreak: 6
 };
