@@ -89,8 +89,9 @@ export const useMetas = () => {
         });
     }, []);
 
-    const handleAddGoal = useCallback((title: string, target: number, type: string) => {
-        const newGoal = createNewGoal(title, target, type);
+    // ATUALIZADA para receber activityType
+    const handleAddGoal = useCallback((title: string, target: number, type: string, activityType?: string) => {
+        const newGoal = createNewGoal(title, target, type, activityType);
         setGoals(prev => {
             const updatedGoals = [...prev, newGoal];
             saveGoalsToStorage(updatedGoals);

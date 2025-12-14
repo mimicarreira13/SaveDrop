@@ -1,6 +1,7 @@
 'use client';
 import { motion } from 'motion/react';
-import { Droplet, ShowerHead, CheckCircle2, Clock, Plus, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
+import { Droplet, ShowerHead, CheckCircle2, Clock, Plus, RefreshCw, Tooth, Droplets, Shirt, Sprout } from 'lucide-react';
 import { Card } from '../../ui/card';
 import { Progress } from '../../ui/progress';
 import { Badge } from '../../ui/badge';
@@ -10,6 +11,7 @@ import { Button } from '../../ui/button';
 import { useMetas } from './useMetas';
 import { calculateGoalProgress } from './metasLogic';
 import { getIcon } from '../../../utils/iconUtils';
+import { ACTIVITY_LABELS, ACTIVITY_TYPES } from './metasData';
 
 export function Metas() {
     const {
@@ -29,6 +31,14 @@ export function Metas() {
         setShowAddGoalDialog
     } = useMetas();
 
+    // Estado para o formulário de nova meta
+    const [newGoalData, setNewGoalData] = useState({
+        title: '',
+        target: '',
+        type: 'water_saving' as 'water_saving' | 'shower_time' | 'activity_streak',
+        activityType: ''
+    });
+
     if (isLoading) {
         return (
             <div className="p-6 flex items-center justify-center h-64">
@@ -36,6 +46,44 @@ export function Metas() {
             </div>
         );
     }
+
+    // Função para resetar o formulário
+    const resetForm = () => {
+        setNewGoalData({
+            title: '',
+            target: '',
+            type: 'water_saving',
+            activityType: ''
+        });
+    };
+
+    // Função para criar a meta
+    const handleCreateGoal = () => {
+        if (!newGoalData.title.trim()) {
+            alert('Por favor, insira um título para a meta!');
+            return;
+        }
+
+        if (!newGoalData.target || parseInt(newGoalData.target) <= 0) {
+            alert('Por favor, insira um valor válido para a meta!');
+            return;
+        }
+
+        // Se for tipo atividade e não selecionou atividade
+        if (newGoalData.type === 'activity_streak' && !newGoalData.activityType) {
+            alert('Por favor, selecione uma atividade!');
+            return;
+        }
+
+        handleAddGoal(
+            newGoalData.title,
+            parseInt(newGoalData.target),
+            newGoalData.type,
+            newGoalData.activityType || undefined
+        );
+
+        resetForm();
+    };
 
     return (
         <div className="p-6 space-y-6">
@@ -92,9 +140,9 @@ export function Metas() {
                                         <div className="flex-1">
                                             <h4 className="text-gray-800 mb-1">{goal.title}</h4>
                                             <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600">
-                              {getFormattedProgress(goal)}
-                            </span>
+                                                <span className="text-sm text-gray-600">
+                                                    {getFormattedProgress(goal)}
+                                                </span>
                                                 {goal.type === 'water_saving' && goal.current > goal.target && (
                                                     <Badge className="bg-green-100 text-green-800 text-xs">
                                                         Concluído!
@@ -134,6 +182,14 @@ export function Metas() {
                                                         'Sequência de Atividades'
                                             }
                                             </p>
+                                            {goal.activityType && (
+                                                <p>
+                                                    <span className="font-medium">Atividade:</span> {
+                                                    ACTIVITY_LABELS[goal.activityType as keyof typeof ACTIVITY_LABELS] ||
+                                                    goal.activityType
+                                                }
+                                                </p>
+                                            )}
                                             <p>
                                                 <span className="font-medium">Fonte de dados:</span> Dashboard atual
                                             </p>
@@ -148,8 +204,6 @@ export function Metas() {
                                                 variant="outline"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    // Para metas de poupança, aumenta em 100L
-                                                    // Para metas de dias, aumenta em 1 dia
                                                     const increment = goal.type === 'water_saving' ? 100 : 1;
                                                     handleUpdateGoal(goal.id, goal.current + increment);
                                                 }}
@@ -237,31 +291,167 @@ export function Metas() {
                 </Button>
             </motion.div>
 
-            {/* Dialog para adicionar nova meta (simplificado) */}
+            {/* Dialog para adicionar nova meta (FORMULÁRIO COMPLETO) */}
             {showAddGoalDialog && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                <div
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+                    onClick={() => {
+                        setShowAddGoalDialog(false);
+                        resetForm();
+                    }}
+                >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white rounded-lg p-6 max-w-sm w-full"
+                        className="bg-white rounded-lg p-6 max-w-md w-full"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <h3 className="text-lg font-semibold mb-4">Nova Meta</h3>
-                        <p className="text-sm text-gray-600 mb-4">
-                            As novas metas serão automaticamente atualizadas com os dados do seu dashboard.
-                        </p>
-                        <div className="flex gap-2">
+                        <h3 className="text-lg font-semibold mb-4">Criar Nova Meta</h3>
+
+                        <div className="space-y-4">
+                            {/* Tipo de Meta */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Tipo de Meta
+                                </label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <button
+                                        type="button"
+                                        className={`p-3 rounded-lg border transition-all flex flex-col items-center justify-center ${
+                                            newGoalData.type === 'water_saving'
+                                                ? 'bg-blue-50 border-blue-500 text-blue-600'
+                                                : 'border-gray-300 hover:bg-gray-50'
+                                        }`}
+                                        onClick={() => setNewGoalData({...newGoalData, type: 'water_saving', activityType: ''})}
+                                    >
+                                        <Droplet className="w-5 h-5 mb-1" />
+                                        <span className="text-xs">Litros</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`p-3 rounded-lg border transition-all flex flex-col items-center justify-center ${
+                                            newGoalData.type === 'shower_time'
+                                                ? 'bg-blue-50 border-blue-500 text-blue-600'
+                                                : 'border-gray-300 hover:bg-gray-50'
+                                        }`}
+                                        onClick={() => setNewGoalData({...newGoalData, type: 'shower_time', activityType: ''})}
+                                    >
+                                        <ShowerHead className="w-5 h-5 mb-1" />
+                                        <span className="text-xs">Dias Duche</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`p-3 rounded-lg border transition-all flex flex-col items-center justify-center ${
+                                            newGoalData.type === 'activity_streak'
+                                                ? 'bg-blue-50 border-blue-500 text-blue-600'
+                                                : 'border-gray-300 hover:bg-gray-50'
+                                        }`}
+                                        onClick={() => setNewGoalData({...newGoalData, type: 'activity_streak'})}
+                                    >
+                                        <CheckCircle2 className="w-5 h-5 mb-1" />
+                                        <span className="text-xs">Atividade</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Título da Meta */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Título da Meta
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newGoalData.title}
+                                    onChange={(e) => setNewGoalData({...newGoalData, title: e.target.value})}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder={
+                                        newGoalData.type === 'water_saving' ? "Ex: Poupar 1500L este mês" :
+                                            newGoalData.type === 'shower_time' ? "Ex: Duches rápidos por 10 dias" :
+                                                "Ex: Escovar os dentes por 7 dias seguidos"
+                                    }
+                                />
+                            </div>
+
+                            {/* Seletor de Atividade (aparece apenas para activity_streak) */}
+                            {newGoalData.type === 'activity_streak' && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Escolher Atividade
+                                    </label>
+                                    <select
+                                        value={newGoalData.activityType}
+                                        onChange={(e) => setNewGoalData({...newGoalData, activityType: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Selecionar atividade...</option>
+                                        <option value={ACTIVITY_TYPES.SHOWER}>🚿 Duche</option>
+                                        <option value={ACTIVITY_TYPES.TEETH_BRUSHING}>🦷 Escovar os Dentes</option>
+                                        <option value={ACTIVITY_TYPES.DISH_WASHING}>🍽️ Lavar a Louça</option>
+                                        <option value={ACTIVITY_TYPES.LAUNDRY}>👕 Lavar Roupa</option>
+                                        <option value={ACTIVITY_TYPES.GARDEN_WATERING}>🌱 Regar Jardim</option>
+                                    </select>
+                                </div>
+                            )}
+
+                            {/* Valor da Meta */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {newGoalData.type === 'water_saving' ? 'Meta (Litros)' :
+                                        newGoalData.type === 'shower_time' ? 'Meta (Dias)' :
+                                            'Meta (Dias de sequência)'}
+                                </label>
+                                <div className="flex">
+                                    <input
+                                        type="number"
+                                        value={newGoalData.target}
+                                        onChange={(e) => setNewGoalData({...newGoalData, target: e.target.value})}
+                                        className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder={
+                                            newGoalData.type === 'water_saving' ? "1500" :
+                                                newGoalData.type === 'shower_time' ? "10" :
+                                                    "7"
+                                        }
+                                        min="1"
+                                    />
+                                    <span className="px-3 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-md text-gray-700 min-w-[80px]">
+                                        {newGoalData.type === 'water_saving' ? 'Litros' :
+                                            newGoalData.type === 'shower_time' ? 'Dias' :
+                                                'Dias seguidos'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Pré-visualização */}
+                            {newGoalData.title || newGoalData.target ? (
+                                <div className="p-3 bg-gray-50 rounded-md">
+                                    <p className="text-sm text-gray-600 mb-1">Pré-visualização:</p>
+                                    <p className="font-medium text-gray-800">
+                                        {newGoalData.title || "(Sem título)"} - {newGoalData.target || "0"}
+                                        {newGoalData.type === 'water_saving' ? 'L' : ' dias'}
+                                        {newGoalData.activityType && ` (${ACTIVITY_LABELS[newGoalData.activityType as keyof typeof ACTIVITY_LABELS] || newGoalData.activityType})`}
+                                    </p>
+                                </div>
+                            ) : null}
+                        </div>
+
+                        <div className="flex gap-2 mt-6">
                             <Button
-                                onClick={() => setShowAddGoalDialog(false)}
+                                onClick={() => {
+                                    setShowAddGoalDialog(false);
+                                    resetForm();
+                                }}
                                 variant="outline"
                                 className="flex-1"
                             >
                                 Cancelar
                             </Button>
                             <Button
-                                onClick={() => handleAddGoal("Poupar 1500L este mês", 1500, "water_saving")}
+                                onClick={handleCreateGoal}
                                 className="flex-1 bg-gradient-to-r from-blue-500 to-green-500 text-white"
+                                disabled={!newGoalData.title || !newGoalData.target ||
+                                    (newGoalData.type === 'activity_streak' && !newGoalData.activityType)}
                             >
-                                Criar Meta de Água
+                                Criar Meta
                             </Button>
                         </div>
                     </motion.div>

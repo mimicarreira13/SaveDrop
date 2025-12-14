@@ -6,6 +6,7 @@ export interface Goal {
     status: 'active' | 'completed';
     icon: string;
     type: 'water_saving' | 'shower_time' | 'activity_streak';
+    activityType?: string; // Nova propriedade opcional para atividades específicas
 }
 
 export interface HistoryItem {
@@ -20,6 +21,35 @@ export interface MetasState {
     expandedGoalId: number | null;
     showAddGoalDialog: boolean;
 }
+
+// Configuração para atividades disponíveis
+export const ACTIVITY_TYPES = {
+    SHOWER: 'shower',
+    TEETH_BRUSHING: 'teeth_brushing',
+    DISH_WASHING: 'dish_washing',
+    LAUNDRY: 'laundry',
+    GARDEN_WATERING: 'garden_watering'
+} as const;
+
+export type ActivityType = typeof ACTIVITY_TYPES[keyof typeof ACTIVITY_TYPES];
+
+// Mapeamento de atividades para labels
+export const ACTIVITY_LABELS: Record<ActivityType, string> = {
+    [ACTIVITY_TYPES.SHOWER]: 'Duche',
+    [ACTIVITY_TYPES.TEETH_BRUSHING]: 'Escovar os Dentes',
+    [ACTIVITY_TYPES.DISH_WASHING]: 'Lavar a Louça',
+    [ACTIVITY_TYPES.LAUNDRY]: 'Lavar Roupa',
+    [ACTIVITY_TYPES.GARDEN_WATERING]: 'Regar Jardim'
+};
+
+// Mapeamento de atividades para ícones
+export const ACTIVITY_ICONS: Record<ActivityType, string> = {
+    [ACTIVITY_TYPES.SHOWER]: 'ShowerHead',
+    [ACTIVITY_TYPES.TEETH_BRUSHING]: 'Tooth',
+    [ACTIVITY_TYPES.DISH_WASHING]: 'Droplets',
+    [ACTIVITY_TYPES.LAUNDRY]: 'Shirt',
+    [ACTIVITY_TYPES.GARDEN_WATERING]: 'Sprout'
+};
 
 // Função para criar metas INICIAIS com valores dinâmicos
 export const createInitialGoals = (
@@ -74,5 +104,5 @@ export const GOAL_TYPES = {
 export const STORAGE_KEYS = {
     USER_GOALS: 'savedrop_user_goals',
     GOALS_HISTORY: 'savedrop_goals_history',
-    DASHBOARD: 'savedrop_dashboard' // Para aceder aos dados do dashboard
+    DASHBOARD: 'savedrop_dashboard'
 };

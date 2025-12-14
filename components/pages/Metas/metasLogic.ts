@@ -1,4 +1,4 @@
-import { Goal, HistoryItem, STORAGE_KEYS, createInitialGoals } from './metasData';
+import { Goal, HistoryItem, STORAGE_KEYS, createInitialGoals, ACTIVITY_ICONS } from './metasData';
 
 // Funções de cálculo PURAS
 export const calculateGoalProgress = (current: number, target: number): number => {
@@ -135,17 +135,23 @@ export const updateGoalProgress = (
     );
 };
 
-// Função para adicionar nova meta
+// Função para adicionar nova meta (ATUALIZADA para suportar activityType)
 export const createNewGoal = (
     title: string,
     target: number,
-    type: string
+    type: string,
+    activityType?: string
 ): Goal => {
     const iconMap: Record<string, string> = {
         'water_saving': 'Droplet',
         'shower_time': 'ShowerHead',
         'activity_streak': 'CheckCircle2'
     };
+
+    // Se for uma atividade específica, usar ícone da atividade
+    if (activityType && ACTIVITY_ICONS[activityType as keyof typeof ACTIVITY_ICONS]) {
+        iconMap[type] = ACTIVITY_ICONS[activityType as keyof typeof ACTIVITY_ICONS];
+    }
 
     // Obtém dados atuais para definir current inicial
     const currentData = getCurrentDashboardData();
@@ -164,7 +170,8 @@ export const createNewGoal = (
         target,
         status: initialCurrent >= target ? 'completed' : 'active',
         icon: iconMap[type] || 'Target',
-        type: type as Goal['type']
+        type: type as Goal['type'],
+        activityType: activityType || undefined
     };
 };
 
