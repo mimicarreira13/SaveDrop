@@ -1,42 +1,68 @@
 // Ficheiro: pages/Recompensas/useRecompensas.ts
 
-import { useState, useEffect } from 'react';
-import { badges, userStats, dailyBonus } from './recompensasData';
-import { calculateLevelProgress, claimDailyBonus } from './recompensasLogic';
+import { useState, useEffect, useCallback } from 'react';
+import { badges, getBaseUserStats, dailyBonus } from './recompensasData';
+import {
+    calculateLevelProgress,
+    getUnlockedBadgesCount,
+    calculateUserStats,
+    claimDailyBonus,
+    saveBonusPoints,
+    hasClaimedBonusToday
+} from './recompensasLogic';
 
 export function useRecompensas() {
-    const [badgesData, setBadgesData] = useState(badges);
-    const [stats, setStats] = useState(userStats);
-    const [isDailyBonusClaimed, setIsDailyBonusClaimed] = useState(false);
+    const [badgesData] = useState(badges); // Estático
+    const [stats, setStats] = useState(() => calculateUserStats(getBaseUserStats()));
     const [levelProgress, setLevelProgress] = useState(0);
+    const [isDailyBonusClaimed, setIsDailyBonusClaimed] = useState(false);
 
-    // Calcular progresso do nível
-    useEffect(() => {
-        const progress = calculateLevelProgress(stats);
+    // Atualizar stats sempre que os dados mudarem
+    const refreshStats = useCallback(() => {
+        const newStats = calculateUserStats(getBaseUserStats());
+        setStats(newStats);
+
+        const progress = calculateLevelProgress(newStats);
         setLevelProgress(progress);
-    }, [stats]);
+    }, []);
 
-    // Função para resgatar bônus diário
-    const handleClaimBonus = () => {
+    // Inicializar e verificar bónus
+    useEffect(() => {
+        refreshStats();
+        setIsDailyBonusClaimed(hasClaimedBonusToday());
+
+        // Atualizar a cada 5 segundos (para sincronizar com dashboard)
+        const interval = setInterval(refreshStats, 5000);
+        return () => clearInterval(interval);
+    }, [refreshStats]);
+
+    // Função para resgatar bónus diário
+    const handleClaimBonus = useCallback(() => {
         if (!isDailyBonusClaimed) {
-            const newPoints = claimDailyBonus(stats.points, dailyBonus.points);
-            setStats(prev => ({
-                ...prev,
-                points: newPoints
-            }));
-            setIsDailyBonusClaimed(true);
-            // Aqui normalmente faria uma chamada API para atualizar no backend
-        }
-    };
+            const result = claimDailyBonus(stats.bonusPoints);
 
-    // Função para desbloquear um badge (exemplo)
-    const unlockBadge = (badgeId: number) => {
-        setBadgesData(prev =>
-            prev.map(badge =>
-                badge.id === badgeId ? { ...badge, unlocked: true } : badge
-            )
-        );
-    };
+            if (result.success) {
+                // Atualizar bónus no localStorage
+                saveBonusPoints(result.newBonusPoints);
+
+                // Atualizar stats
+                const newStats = calculateUserStats(getBaseUserStats());
+                setStats(newStats);
+
+                // Recalcular progresso
+                const progress = calculateLevelProgress(newStats);
+                setLevelProgress(progress);
+
+                setIsDailyBonusClaimed(true);
+            }
+        }
+    }, [stats.bonusPoints, isDailyBonusClaimed]);
+
+    // Função para atualizar manualmente (opcional)
+    const refreshData = useCallback(() => {
+        refreshStats();
+        setIsDailyBonusClaimed(hasClaimedBonusToday());
+    }, [refreshStats]);
 
     return {
         badges: badgesData,
@@ -45,6 +71,6 @@ export function useRecompensas() {
         levelProgress,
         isDailyBonusClaimed,
         handleClaimBonus,
-        unlockBadge
+        refreshData
     };
 }

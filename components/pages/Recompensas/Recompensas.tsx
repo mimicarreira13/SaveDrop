@@ -60,8 +60,21 @@ export function Recompensas() {
                 <p className="text-xs opacity-90">
                   {stats.points} / {stats.nextLevelPoints} pontos
                 </p>
+
+                {/* Decomposição dos pontos */}
+                <div className="mt-2 pt-2 border-t border-white/20 text-xs opacity-90">
+                  <div className="flex justify-between">
+                    <span>💧 Litros poupados:</span>
+                    <span>{stats.litrosPoupados}L</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>⭐ Pontos bónus:</span>
+                    <span>+{stats.bonusPoints}</span>
+                  </div>
+                </div>
               </div>
             </div>
+
             <div className="flex gap-4 text-center">
               <div className="flex-1">
                 <p className="text-2xl">{stats.badgesCount}</p>

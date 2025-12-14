@@ -17,6 +17,8 @@ export interface UserStats {
     title: string;
     badgesCount: number;
     ranking: number;
+    litrosPoupados: number; // Litros reais poupados
+    bonusPoints: number;    // Pontos bónus separados
 }
 
 export const badges: Badge[] = [
@@ -70,14 +72,13 @@ export const badges: Badge[] = [
     }
 ];
 
-export const userStats: UserStats = {
+export const getBaseUserStats = (): Omit<UserStats, 'points' | 'litrosPoupados' | 'bonusPoints'> => ({
     level: 8,
-    points: 1250,
     nextLevelPoints: 1500,
     title: "Eco Guerreiro",
-    badgesCount: 3,
-    ranking: 4
-};
+    badgesCount: 3, // estático
+    ranking: 4      // estático
+});
 
 export const dailyBonus = {
     title: "Bônus Diário",
