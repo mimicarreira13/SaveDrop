@@ -15,7 +15,7 @@ export interface RankingUser {
 export interface StatCard {
     label: string;
     value: string;
-    icon: any; // Componente de ícone
+    icon: any;
     color: string;
 }
 
@@ -26,13 +26,6 @@ export interface Challenge {
 }
 
 export const faceEmojis = ["😀", "😇", "😎", "😊", "🥰", "🤓", "🤠", "😋", "🤗", "🙃"];
-
-// Dados para os cards de estatísticas
-export const userStats: StatCard[] = [
-    { label: "A Sua Posição", value: "4º", icon: "Trophy", color: "text-blue-600" },
-    { label: "Pontos", value: "1250", icon: "Award", color: "text-green-600" },
-    { label: "Variação", value: "-1", icon: "TrendingUp", color: "text-orange-600" }
-];
 
 // Desafio semanal
 export const weeklyChallenge: Challenge = {
