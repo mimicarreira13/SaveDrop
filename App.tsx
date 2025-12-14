@@ -1,25 +1,84 @@
 // File: `App.tsx`
 'use client';
-import { useState } from 'react';
-import { Dashboard } from './components/pages/Dashboard';
+import { useState, useEffect } from 'react';
+import { Dashboard } from './components/pages/Dashboard/Dashboard';
 import { Metas } from './components/pages/Metas';
 import { Recompensas } from './components/pages/Recompensas';
 import { Ranking } from './components/pages/Ranking';
 import { Mascote } from './components/pages/Mascote';
 import { AdicionarConsumo } from './components/pages/AdicionarConsumo';
+import { QuestionarioInicial } from './components/pages/QuestionarioInicial';
 import { Droplet, Target, Trophy, Users, Heart } from 'lucide-react';
+
+// Tipo para as baselines do utilizador
+type UserBaselines = {
+  duche: number;
+  dentes: number;
+  loica: number;
+};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [hasCompletedQuestionnaire, setHasCompletedQuestionnaire] = useState(false);
+  const [userBaselines, setUserBaselines] = useState<UserBaselines | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Verificar no localStorage ao carregar
+  useEffect(() => {
+    const completed = localStorage.getItem('waterApp_questionnaire') === 'completed';
+    const savedBaselines = localStorage.getItem('waterApp_baselines');
+
+    if (completed && savedBaselines) {
+      try {
+        setUserBaselines(JSON.parse(savedBaselines));
+      } catch (e) {
+        console.error('Erro ao ler baselines:', e);
+      }
+    }
+
+    setHasCompletedQuestionnaire(completed);
+    setIsLoading(false);
+  }, []);
+
+  // Handler para completar o questionário
+  const handleQuestionnaireComplete = (answers: UserBaselines) => {
+    setUserBaselines(answers);
+    setHasCompletedQuestionnaire(true);
+    localStorage.setItem('waterApp_questionnaire', 'completed');
+    localStorage.setItem('waterApp_baselines', JSON.stringify(answers));
+  };
+
+  // Mostrar loading enquanto verifica
+  if (isLoading) {
+    return (
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
+          <div className="text-center">
+            <Droplet className="w-12 h-12 text-blue-600 animate-pulse mx-auto mb-4" />
+            <p className="text-gray-600">A carregar...</p>
+          </div>
+        </div>
+    );
+  }
+
+  // Mostrar questionário se ainda não foi completado
+  if (!hasCompletedQuestionnaire) {
+    return <QuestionarioInicial onComplete={handleQuestionnaireComplete} />;
+  }
+
+  // App normal após questionário
   return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50">
         {/* Mobile Container */}
         <div className="max-w-md mx-auto min-h-screen bg-white shadow-xl flex flex-col">
           {/* Content Area */}
           <div className="flex-1 overflow-auto" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))' }}>
-            {activeTab === 'dashboard' && <Dashboard onAdd={() => setActiveTab('adicionar')} />}
-            {activeTab === 'metas' && <Metas />}
+            {activeTab === 'dashboard' && (
+                <Dashboard
+                    onAdd={() => setActiveTab('adicionar')}
+                    userBaselines={userBaselines}
+                />
+            )}
+            {activeTab === 'metas' && <Metas userBaselines={userBaselines} />}
             {activeTab === 'recompensas' && <Recompensas />}
             {activeTab === 'ranking' && <Ranking />}
             {activeTab === 'mascote' && <Mascote />}
@@ -27,6 +86,7 @@ export default function App() {
                 <AdicionarConsumo
                     onSave={() => setActiveTab('dashboard')}
                     onCancel={() => setActiveTab('dashboard')}
+                    userBaselines={userBaselines}
                 />
             )}
           </div>
