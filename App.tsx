@@ -5,7 +5,7 @@ import { Dashboard } from './components/pages/Dashboard/Dashboard';
 import { Metas } from './components/pages/Metas/Metas';
 import { Recompensas } from './components/pages/Recompensas/Recompensas';
 import { Ranking } from './components/pages/Ranking/Ranking';
-import { Mascote } from './components/pages/Mascote';
+import { Mascote } from './components/pages/Mascote/Mascote';
 import { AdicionarConsumo } from './components/pages/AdicionarConsumo/AdicionarConsumo';
 import { QuestionarioInicial } from './components/pages/QuestionarioInicial';
 import { Droplet, Target, Trophy, Users, Heart } from 'lucide-react';
