@@ -10,6 +10,7 @@ import { AdicionarConsumo } from './components/pages/AdicionarConsumo/AdicionarC
 import { QuestionarioInicial } from './components/pages/QuestionarioInicial';
 import { Droplet, Target, Trophy, Users, Heart } from 'lucide-react';
 import { AppInitializer, initializeAppData } from './components/AppInitializer';
+import { SplashScreen } from './components/SplashScreen';
 
 // Tipo para as baselines do utilizador
 type UserBaselines = {
@@ -23,10 +24,32 @@ export default function App() {
   const [hasCompletedQuestionnaire, setHasCompletedQuestionnaire] = useState(false);
   const [userBaselines, setUserBaselines] = useState<UserBaselines | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
 
   // Verificar no localStorage ao carregar
   useEffect(() => {
-    // INICIALIZA OS DADOS DA APP PRIMEIRO
+
+    const checkSplashAndLoadData = async () => {
+      const hasSeenSplash = localStorage.getItem('waterApp_hasSeenSplash') === 'true';
+
+      console.log("hasSeenSplash no localStorage:", hasSeenSplash);
+
+      if (hasSeenSplash) {
+        console.log("Já viu o splash antes, escondendo...");
+        setShowSplash(false);
+      } else {
+        console.log("Primeira vez - mostrando splash e marcando no localStorage");
+        localStorage.setItem('waterApp_hasSeenSplash', 'true');
+
+        const timer = setTimeout(() => {
+          console.log("Tempo do splash acabou, escondendo...");
+          setShowSplash(false);
+        }, 2000);
+
+        return () => clearTimeout(timer);
+      }
+    }
+
     initializeAppData();
 
     const completed = localStorage.getItem('waterApp_questionnaire') === 'completed';
@@ -55,7 +78,8 @@ export default function App() {
 
     setHasCompletedQuestionnaire(completed);
     setIsLoading(false);
-  }, []);
+    checkSplashAndLoadData();
+    }, []);
 
   // Handler para completar o questionário
   const handleQuestionnaireComplete = (answers: UserBaselines) => {
@@ -68,10 +92,15 @@ export default function App() {
     initializeAppData();
   };
 
+  if (showSplash) {
+    console.log("Renderizando splash screen...");
+    return <SplashScreen />;
+  }
+
   // Mostrar loading enquanto verifica
   if (isLoading) {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
+        <div className="max-w-md mx-auto min-h-screen  bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
           <div className="text-center">
             <Droplet className="w-12 h-12 text-blue-600 animate-pulse mx-auto mb-4" />
             <p className="text-gray-600">A carregar...</p>

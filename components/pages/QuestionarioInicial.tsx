@@ -30,7 +30,7 @@ export const QuestionarioInicial: React.FC<QuestionarioInicialProps> = ({ onComp
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50 p-6 flex flex-col">
+        <div className="max-w-md mx-auto min-h-screen bg-gradient-to-b from-blue-50 to-green-50 p-6 flex flex-col">
             {/* Header */}
             <div className="text-center mb-8 pt-8">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
