@@ -49,7 +49,7 @@ export const calculatePredictedBaselines = (
 // Função para obter baseline (real ou predita) para qualquer atividade
 export const getBaselineForActivity = (
     activityId: string,
-    userBaselines?: UserBaselines
+    userBaselines?: { duche: number; dentes: number; loica: number } | null | undefined
 ): number | null => {
     if (!userBaselines) return null;
 
