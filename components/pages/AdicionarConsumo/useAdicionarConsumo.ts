@@ -30,7 +30,11 @@ interface AdicionarConsumoState {
     pendingSave: boolean;
 }
 
-export const useAdicionarConsumo = (userBaselines?: UserBaselines, onSave?: () => void) => {
+export const useAdicionarConsumo = (userBaselines?: {
+    duche: number;
+    dentes: number;
+    loica: number
+} | null | undefined, onSave?: () => void) => {
     const [state, setState] = useState<AdicionarConsumoState>({
         selectedActivity: null,
         amount: 1,

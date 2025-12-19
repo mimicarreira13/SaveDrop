@@ -10,7 +10,7 @@ export const calculateSavings = (
     activityId: string,
     amount: number,
     litersPerUnit: number,
-    userBaselines?: UserBaselines
+    userBaselines?: { duche: number; dentes: number; loica: number } | null | undefined
 ): number => {
     const baselineAmount = getBaselineForActivity(activityId, userBaselines);
     if (baselineAmount === null) return 0;

@@ -7,7 +7,7 @@ import { cn } from "./utils";
 
 interface ProgressProps extends React.ComponentProps<typeof ProgressPrimitive.Root> {
   value?: number;
-  color?: "white" | "blue" | "green";
+  color?: "white" | "blue" | "green" | "amber" | "red";
   animate?: boolean;
   duration?: number;
 }
@@ -25,6 +25,8 @@ export function Progress({
     white: "bg-white",
     blue: "bg-blue-500",
     green: "bg-green-500",
+    amber: "bg-amber-500",
+    red: "bg-red-500",
   }[color];
 
   return (

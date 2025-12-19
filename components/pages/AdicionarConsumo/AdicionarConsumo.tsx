@@ -21,7 +21,7 @@ interface AdicionarConsumoProps {
         duche: number;
         dentes: number;
         loica: number;
-    };
+    } | null;
 }
 
 export function AdicionarConsumo({ onSave, onCancel, userBaselines }: AdicionarConsumoProps) {
