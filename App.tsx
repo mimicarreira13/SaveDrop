@@ -1,24 +1,135 @@
-// File: `App.tsx`
+// src/App.tsx
 'use client';
-import { useState } from 'react';
-import { Dashboard } from './components/pages/Dashboard';
-import { Metas } from './components/pages/Metas';
-import { Recompensas } from './components/pages/Recompensas';
-import { Ranking } from './components/pages/Ranking';
-import { Mascote } from './components/pages/Mascote';
-import { AdicionarConsumo } from './components/pages/AdicionarConsumo';
+import { useState, useEffect } from 'react';
+import { Dashboard } from './components/pages/Dashboard/Dashboard';
+import { Metas } from './components/pages/Metas/Metas';
+import { Recompensas } from './components/pages/Recompensas/Recompensas';
+import { Ranking } from './components/pages/Ranking/Ranking';
+import { Mascote } from './components/pages/Mascote/Mascote';
+import { AdicionarConsumo } from './components/pages/AdicionarConsumo/AdicionarConsumo';
+import { QuestionarioInicial } from './components/pages/QuestionarioInicial';
 import { Droplet, Target, Trophy, Users, Heart } from 'lucide-react';
+import { AppInitializer, initializeAppData } from './components/AppInitializer';
+import { SplashScreen } from './components/SplashScreen';
+
+// Tipo para as baselines do utilizador
+type UserBaselines = {
+  duche: number;
+  dentes: number;
+  loica: number;
+};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [hasCompletedQuestionnaire, setHasCompletedQuestionnaire] = useState(false);
+  const [userBaselines, setUserBaselines] = useState<UserBaselines | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
 
+  // Verificar no localStorage ao carregar
+  useEffect(() => {
+
+    const checkSplashAndLoadData = async () => {
+      const hasSeenSplash = localStorage.getItem('waterApp_hasSeenSplash') === 'true';
+
+      console.log("hasSeenSplash no localStorage:", hasSeenSplash);
+
+      if (hasSeenSplash) {
+        console.log("Já viu o splash antes, escondendo...");
+        setShowSplash(false);
+      } else {
+        console.log("Primeira vez - mostrando splash e marcando no localStorage");
+        localStorage.setItem('waterApp_hasSeenSplash', 'true');
+
+        const timer = setTimeout(() => {
+          console.log("Tempo do splash acabou, escondendo...");
+          setShowSplash(false);
+        }, 2000);
+
+        return () => clearTimeout(timer);
+      }
+    }
+
+    initializeAppData();
+
+    const completed = localStorage.getItem('waterApp_questionnaire') === 'completed';
+    const savedBaselines = localStorage.getItem('waterApp_baselines');
+
+    if (completed && savedBaselines) {
+      try {
+        const parsedBaselines = JSON.parse(savedBaselines);
+        setUserBaselines(parsedBaselines);
+
+        // Garante que os dados do dashboard existem para as metas
+        if (!localStorage.getItem('savedrop_dashboard')) {
+          localStorage.setItem('savedrop_dashboard', JSON.stringify({
+            waterSaved: 1250,
+            daysStreak: 6,
+            goalWater: 2000,
+            baseWaterSaved: 1250,
+            accumulatedSavings: 0,
+            lastUpdate: new Date().toISOString()
+          }));
+        }
+      } catch (e) {
+        console.error('Erro ao ler baselines:', e);
+      }
+    }
+
+    setHasCompletedQuestionnaire(completed);
+    setIsLoading(false);
+    checkSplashAndLoadData();
+    }, []);
+
+  // Handler para completar o questionário
+  const handleQuestionnaireComplete = (answers: UserBaselines) => {
+    setUserBaselines(answers);
+    setHasCompletedQuestionnaire(true);
+    localStorage.setItem('waterApp_questionnaire', 'completed');
+    localStorage.setItem('waterApp_baselines', JSON.stringify(answers));
+
+    // Inicializa os dados da app após o questionário
+    initializeAppData();
+  };
+
+  if (showSplash) {
+    console.log("Renderizando splash screen...");
+    return <SplashScreen />;
+  }
+
+  // Mostrar loading enquanto verifica
+  if (isLoading) {
+    return (
+        <div className="max-w-md mx-auto min-h-screen  bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
+          <div className="text-center">
+            <Droplet className="w-12 h-12 text-blue-600 animate-pulse mx-auto mb-4" />
+            <p className="text-gray-600">A carregar...</p>
+          </div>
+        </div>
+    );
+  }
+
+  // Mostrar questionário se ainda não foi completado
+  if (!hasCompletedQuestionnaire) {
+    return <QuestionarioInicial onComplete={handleQuestionnaireComplete} />;
+  }
+
+  // App normal após questionário
   return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50">
+        {/* Componente que inicializa dados */}
+        <AppInitializer />
+
         {/* Mobile Container */}
         <div className="max-w-md mx-auto min-h-screen bg-white shadow-xl flex flex-col">
           {/* Content Area */}
           <div className="flex-1 overflow-auto" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))' }}>
-            {activeTab === 'dashboard' && <Dashboard onAdd={() => setActiveTab('adicionar')} />}
+            {activeTab === 'dashboard' && (
+                <Dashboard
+                    onAdd={() => setActiveTab('adicionar')}
+                    userBaselines={userBaselines}
+                />
+            )}
             {activeTab === 'metas' && <Metas />}
             {activeTab === 'recompensas' && <Recompensas />}
             {activeTab === 'ranking' && <Ranking />}
@@ -27,6 +138,7 @@ export default function App() {
                 <AdicionarConsumo
                     onSave={() => setActiveTab('dashboard')}
                     onCancel={() => setActiveTab('dashboard')}
+                    userBaselines={userBaselines}
                 />
             )}
           </div>
